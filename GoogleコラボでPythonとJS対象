@@ -1,0 +1,905 @@
+# Google Colab用 Python vs JavaScript 対照表 コピペ用
+
+## 📋 使い方
+1. Google Colabで新しいノートブックを作成
+2. 各セルを順番にコピペして実行
+3. セルタイプ（Markdown/Code）に注意
+
+---
+
+## ⬇️ Markdown セル 1: タイトル
+```markdown
+# Python vs JavaScript 基礎文法対照表
+
+## 📚 Google Colabで学ぶプログラミング基礎
+
+このノートブックでは、PythonとJavaScriptの基礎文法を対照表形式で学習できます。
+
+## 目次
+1. [変数宣言](#1-変数宣言)
+2. [データ型](#2-データ型)
+3. [条件文](#3-条件文)
+4. [ループ](#4-ループ)
+5. [関数](#5-関数)
+6. [クラス](#6-クラス)
+7. [エラーハンドリング](#7-エラーハンドリング)
+```
+
+## ⬇️ Markdown セル 2: 変数宣言 説明
+```markdown
+## 1. 変数宣言
+
+### Python版と実行例
+```
+
+## ⬇️ Code セル 1: Python 変数宣言
+```python
+# 基本的な変数宣言（型推論）
+name = "山田太郎"  # 文字列型の変数
+age = 25  # 整数型の変数
+height = 175.5  # 浮動小数点型の変数
+
+# Pythonは型推論が自動で行われる
+print(f"名前: {name}, 年齢: {age}, 身長: {height}cm")
+```
+
+## ⬇️ Markdown セル 3: JavaScript版 説明
+```markdown
+### JavaScript版のコード（参考）
+```
+JavaScript版のコード：
+```javascript
+// 変数宣言（var - 旧式）
+var name = "山田太郎";  // スコープが関数レベル
+var age = 25;  // 再代入可能
+var height = 175.5;  // 巻き上げの対象
+
+// 変数宣言（let - 推奨）
+let name2 = "鈴木花子";  // ブロックスコープ
+let age2 = 23;  // 再代入可能
+let height2 = 162.0;  // 巻き上げされない
+
+// 定数宣言（const - 推奨）
+const PI = 3.14159;  // 再代入不可
+const colors = ["red", "blue", "green"];  // オブジェクトの中身は変更可能
+
+console.log(`名前: ${name}, 年齢: ${age}, 身長: ${height}cm`);
+```
+```
+
+## ⬇️ Code セル 2: Python 変数実行例
+```python
+# 実際に動かしてみよう
+name = "山田太郎"  # 変数に文字列を代入
+age = 25  # 変数に数値を代入
+height = 175.5  # 変数に小数を代入
+
+# f-stringを使った文字列フォーマット
+print(f"名前: {name}, 年齢: {age}, 身長: {height}cm")
+
+# 変数の型を確認
+print(f"nameの型: {type(name)}")  # <class 'str'>
+print(f"ageの型: {type(age)}")  # <class 'int'>
+print(f"heightの型: {type(height)}")  # <class 'float'>
+```
+
+## ⬇️ Markdown セル 4: データ型
+```markdown
+## 2. データ型
+
+### Python版の基本的なデータ型
+```
+
+## ⬇️ Code セル 3: Python データ型 基本
+```python
+# 基本的なデータ型
+# 文字列 (string)
+greeting = "こんにちは"  # シングルまたはダブルクォートで囲む
+multiline = """複数行の
+文字列も可能"""  # 3つのクォートで複数行
+
+# 数値 (number)
+integer_num = 42  # 整数
+float_num = 3.14  # 浮動小数点数
+complex_num = 1 + 2j  # 複素数（Pythonのみ）
+
+# 真偽値 (boolean)
+is_student = True  # TrueまたはFalse（大文字始まり）
+is_working = False
+
+# None型
+empty_value = None  # 値がないことを表す
+
+# 値を確認
+print(f"greeting: {greeting}")
+print(f"integer_num: {integer_num}")
+print(f"complex_num: {complex_num}")
+print(f"is_student: {is_student}")
+print(f"empty_value: {empty_value}")
+```
+
+## ⬇️ Code セル 4: Python コレクション型
+```python
+# コレクション型
+# リスト (list) - 順序あり、変更可能
+fruits = ["apple", "banana", "orange"]  # 角括弧で囲む
+numbers = [1, 2, 3, 4, 5]  # 異なる型も混在可能
+
+# タプル (tuple) - 順序あり、変更不可
+coordinates = (10, 20)  # 丸括弧で囲む
+rgb = (255, 128, 0)  # 色情報などに使用
+
+# 辞書 (dictionary) - キーと値のペア
+user = {
+    "name": "田中",  # キーはクォートで囲む
+    "age": 30,  # 値は任意の型
+    "email": "tanaka@example.com"
+}
+
+# 集合 (set) - 重複なし、順序なし
+unique_numbers = {1, 2, 3, 3, 4, 4, 5}  # 重複は自動で削除される
+
+# 実行例
+fruits.append("grape")  # リストに追加
+print(f"フルーツリスト: {fruits}")
+print(f"ユーザー情報: {user}")
+print(f"重複削除後: {unique_numbers}")
+```
+
+## ⬇️ Markdown セル 5: JavaScript データ型説明
+```markdown
+### JavaScript版のデータ型（参考）
+
+```javascript
+// 文字列 (string)
+const greeting = "こんにちは";  // シングルまたはダブルクォート
+const template = `テンプレート文字列
+複数行対応
+${変数}埋め込み可能`;  // バッククォートで囲む
+
+// 数値 (number)
+const integer = 42;  // 整数
+const float = 3.14;  // 浮動小数点数（区別なし）
+
+// 真偽値 (boolean)
+const isStudent = true;  // true または false（小文字）
+const isWorking = false;
+
+// undefined と null
+let empty;  // undefined（宣言のみ）
+const empty2 = null;  // null（意図的に空）
+
+// 配列 (array)
+const fruits = ["apple", "banana", "orange"];  // 角括弧
+const mixed = [1, "two", true, null];  // 異なる型も混在可能
+
+// オブジェクト (object)
+const user = {
+    name: "田中",  // キーはクォート省略可能
+    age: 30,
+    email: "tanaka@example.com"
+};
+
+// Map と Set
+const map = new Map();  // キーと値のペア
+const set = new Set([1, 2, 3, 3, 4]);  // 重複なし
+```
+```
+
+## ⬇️ Markdown セル 6: 条件文
+```markdown
+## 3. 条件文
+
+### Python版の条件文
+```
+
+## ⬇️ Code セル 5: Python 条件文
+```python
+# if文の基本構文
+score = 85  # テストの点数
+grade = ""  # 成績を格納する変数
+
+# if-elif-else構文
+if score >= 90:  # 90点以上の場合
+    grade = "A"
+elif score >= 80:  # 80点以上90点未満の場合
+    grade = "B"
+elif score >= 70:  # 70点以上80点未満の場合
+    grade = "C"
+elif score >= 60:  # 60点以上70点未満の場合
+    grade = "D"
+else:  # 60点未満の場合
+    grade = "F"
+
+print(f"点数: {score}, 成績: {grade}")  # 点数: 85, 成績: B
+
+# 論理演算子の例
+age = 20  # 年齢
+is_student = True  # 学生かどうか
+
+# and演算子（すべての条件が真）
+if age >= 18 and age <= 25 and is_student:
+    print("学生割引が適用されます")
+
+# or演算子（いずれかの条件が真）
+if age < 18 or is_student:
+    print("何らかの割引が適用されます")
+
+# not演算子（条件の否定）
+if not is_student:
+    print("一般料金になります")
+```
+
+## ⬇️ Code セル 6: 実践的な条件文例
+```python
+# 実践的な条件文の例
+def check_ticket_price(age, is_student):
+    """チケット料金を決定する関数"""
+    
+    # 年齢による基本料金
+    if age < 12:  # 12歳未満
+        base_price = 500
+        category = "子供"
+    elif age >= 65:  # 65歳以上
+        base_price = 1000
+        category = "シニア"
+    else:  # 12歳以上65歳未満
+        base_price = 1500
+        category = "一般"
+    
+    # 学生割引の適用
+    if is_student and 18 <= age <= 25:  # 18-25歳の学生
+        discount = 300
+        category += "（学生割引）"
+    else:
+        discount = 0
+    
+    # 最終料金の計算
+    final_price = base_price - discount
+    
+    return final_price, category
+
+# 実行例
+price, cat = check_ticket_price(22, True)
+print(f"料金: {price}円, カテゴリ: {cat}")  # 料金: 1200円, カテゴリ: 一般（学生割引）
+```
+
+## ⬇️ Markdown セル 7: ループ
+```markdown
+## 4. ループ
+
+### Python版のループ構文
+```
+
+## ⬇️ Code セル 7: Python for文
+```python
+# for文 - リストの要素を反復
+fruits = ["apple", "banana", "orange", "grape"]  # リストの定義
+
+# 基本的なfor文
+print("==== 基本的なfor文 ====")
+for fruit in fruits:  # 各要素に対して処理
+    print(f"くだもの: {fruit}")  # apple, banana, orange, grapeが順に出力
+
+# インデックス付きfor文
+print("\n==== インデックス付きfor文 ====")
+for index, fruit in enumerate(fruits):  # enumerateでインデックスも取得
+    print(f"{index + 1}番目: {fruit}")  # 1番目: apple, 2番目: banana...
+
+# range関数を使ったfor文
+print("\n==== range関数 ====")
+for i in range(5):  # 0から4まで
+    print(f"カウント: {i}")  # 0, 1, 2, 3, 4
+
+for i in range(1, 6):  # 1から5まで
+    print(f"数字: {i}")  # 1, 2, 3, 4, 5
+    
+for i in range(0, 11, 2):  # 0から10まで2刻み
+    print(f"偶数: {i}")  # 0, 2, 4, 6, 8, 10
+```
+
+## ⬇️ Code セル 8: Python while文と内包表記
+```python
+# while文 - 条件が真の間繰り返す
+print("==== while文 ====")
+count = 0  # カウンター変数
+max_count = 5  # 最大回数
+
+while count < max_count:  # 条件式
+    print(f"while実行回数: {count}")  # 0, 1, 2, 3, 4
+    count += 1  # カウンターをインクリメント
+
+# breakとcontinue
+print("\n==== break と continue ====")
+for i in range(10):
+    if i == 5:  # i が 5 の時
+        print("5に到達したのでループを終了")
+        break  # ループを終了
+    if i % 2 == 0:  # 偶数の時
+        continue  # 次の反復へスキップ
+    print(f"奇数: {i}")  # 1, 3（5は到達せず）
+
+# リスト内包表記（Pythonの特徴）
+print("\n==== リスト内包表記 ====")
+squares = [x**2 for x in range(1, 6)]  # 1から5までの2乗
+print(f"2乗のリスト: {squares}")  # [1, 4, 9, 16, 25]
+
+# 条件付き内包表記
+even_squares = [x**2 for x in range(1, 11) if x % 2 == 0]  # 偶数の2乗
+print(f"偶数の2乗: {even_squares}")  # [4, 16, 36, 64, 100]
+
+# 辞書内包表記
+words = ["apple", "banana", "cherry"]
+word_lengths = {word: len(word) for word in words}  # 単語と長さの辞書
+print(f"単語の長さ: {word_lengths}")  # {'apple': 5, 'banana': 6, 'cherry': 6}
+```
+
+## ⬇️ Code セル 9: 実践的なループ例
+```python
+# 実践的なループの例 - 九九表
+def multiplication_table(number):
+    """九九表を作成する関数"""
+    print(f"{number}の段:")
+    for i in range(1, 10):  # 1から9まで
+        result = number * i  # 掛け算の結果
+        print(f"{number} × {i} = {result}")  # 結果を出力
+    print("-" * 20)  # 区切り線
+
+# 複数の段を出力
+for n in range(1, 4):  # 1の段から3の段まで
+    multiplication_table(n)
+```
+
+## ⬇️ Markdown セル 8: 関数
+```markdown
+## 5. 関数
+
+### Python版の関数定義
+```
+
+## ⬇️ Code セル 10: Python 基本的な関数
+```python
+# 基本的な関数定義
+def greet(name):  # def キーワードで関数を定義
+    """挨拶をする関数"""  # ドキュメントstring（省略可）
+    message = f"こんにちは、{name}さん！"  # ローカル変数
+    return message  # 戻り値を指定
+
+# 関数の呼び出し
+result = greet("田中")  # 引数を渡して実行
+print(result)  # "こんにちは、田中さん！"
+
+# デフォルト引数
+def introduce(name, age=25, city="東京"):  # デフォルト値を設定
+    """自己紹介をする関数"""
+    return f"私は{name}、{age}歳、{city}在住です。"
+
+# デフォルト引数の使用
+print(introduce("佐藤"))  # 私は佐藤、25歳、東京在住です。
+print(introduce("鈴木", 30))  # 私は鈴木、30歳、東京在住です。
+print(introduce("田中", 35, "大阪"))  # 私は田中、35歳、大阪在住です。
+```
+
+## ⬇️ Code セル 11: Python キーワード引数とラムダ
+```python
+# キーワード引数
+def create_profile(name, **kwargs):  # **kwargsで可変キーワード引数
+    """プロフィールを作成する関数"""
+    profile = {"name": name}  # 基本プロフィール
+    
+    # 追加情報を統合
+    profile.update(kwargs)  # 辞書にキーワード引数を追加
+    
+    return profile
+
+# キーワード引数の使用
+user1 = create_profile("山田", age=30, city="東京", job="エンジニア")
+print(f"ユーザー1: {user1}")  # {'name': '山田', 'age': 30, 'city': '東京', 'job': 'エンジニア'}
+
+# ラムダ関数（無名関数）
+square = lambda x: x ** 2  # 2乗を計算するラムダ
+print(f"5の2乗: {square(5)}")  # 5の2乗: 25
+
+# リストと一緒に使用
+numbers = [1, 2, 3, 4, 5]
+squared = list(map(lambda x: x ** 2, numbers))  # 各要素を2乗
+print(f"2乗のリスト: {squared}")  # [1, 4, 9, 16, 25]
+
+# ソートのキーとして使用
+fruits = ["banana", "apple", "cherry"]
+sorted_fruits = sorted(fruits, key=lambda x: len(x))  # 長さでソート
+print(f"長さでソート: {sorted_fruits}")  # ['apple', 'banana', 'cherry']
+```
+
+## ⬇️ Code セル 12: 実践的な関数例
+```python
+# 実践的な関数の例
+def calculate_statistics(numbers):
+    """数値リストの統計情報を計算する関数"""
+    
+    if not numbers:  # 空リストのチェック
+        return None
+    
+    # 各統計値の計算
+    total = sum(numbers)  # 合計
+    count = len(numbers)  # 個数
+    average = total / count  # 平均
+    minimum = min(numbers)  # 最小値
+    maximum = max(numbers)  # 最大値
+    
+    # 結果を辞書で返す
+    return {
+        "total": total,
+        "count": count,
+        "average": average,
+        "min": minimum,
+        "max": maximum
+    }
+
+# 関数のテスト
+test_numbers = [10, 20, 30, 40, 50]
+stats = calculate_statistics(test_numbers)
+print(f"統計情報: {stats}")
+# 統計情報: {'total': 150, 'count': 5, 'average': 30.0, 'min': 10, 'max': 50}
+
+# 空リストのテスト
+empty_stats = calculate_statistics([])
+print(f"空リストの結果: {empty_stats}")  # None
+```
+
+## ⬇️ Markdown セル 9: クラス
+```markdown
+## 6. クラス
+
+### Python版のクラス定義
+```
+
+## ⬇️ Code セル 13: Python 基本的なクラス
+```python
+# 基本的なクラス定義
+class Person:  # class キーワードでクラスを定義
+    """人物を表すクラス"""
+    
+    # クラス変数（全インスタンス共通）
+    species = "Human"
+    
+    def __init__(self, name, age):  # コンストラクタ
+        """インスタンスの初期化"""
+        self.name = name  # インスタンス変数
+        self.age = age    # インスタンス変数
+    
+    def introduce(self):  # インスタンスメソッド
+        """自己紹介をするメソッド"""
+        return f"私は{self.name}、{self.age}歳です。"
+    
+    def have_birthday(self):  # インスタンスメソッド
+        """誕生日を迎えるメソッド"""
+        self.age += 1  # 年齢をインクリメント
+        return f"誕生日おめでとう！{self.age}歳になりました。"
+
+# インスタンスの作成と使用
+person1 = Person("田中", 25)  # インスタンス生成
+print(person1.introduce())  # 私は田中、25歳です。
+print(person1.have_birthday())  # 誕生日おめでとう！26歳になりました。
+
+# クラス変数へのアクセス
+print(f"種族: {Person.species}")  # 種族: Human
+print(f"インスタンスからもアクセス可能: {person1.species}")  # Human
+```
+
+## ⬇️ Code セル 14: Python 継承とポリモーフィズム
+```python
+# 継承とポリモーフィズム
+class Student(Person):  # Personクラスを継承
+    """学生を表すクラス"""
+    
+    def __init__(self, name, age, student_id):
+        super().__init__(name, age)  # 親クラスの初期化を呼び出す
+        self.student_id = student_id  # 学生固有の属性
+    
+    def introduce(self):  # メソッドのオーバーライド
+        """学生用の自己紹介"""
+        base_intro = super().introduce()  # 親クラスのメソッドを使用
+        return f"{base_intro} 学生番号は{self.student_id}です。"
+    
+    def study(self, subject):  # 学生固有のメソッド
+        """勉強するメソッド"""
+        return f"{self.name}は{subject}を勉強しています。"
+
+# 継承したクラスの使用
+student1 = Student("佐藤", 20, "S12345")
+print(student1.introduce())  # 私は佐藤、20歳です。 学生番号はS12345です。
+print(student1.study("Python"))  # 佐藤はPythonを勉強しています。
+print(student1.have_birthday())  # 継承したメソッドも使える
+
+# ポリモーフィズムの例
+people = [person1, student1]
+for person in people:
+    print(person.introduce())  # 同じメソッド名だが異なる実装が呼ばれる
+```
+
+## ⬇️ Code セル 15: 実践的なクラス例
+```python
+# 実践的なクラスの例 - 銀行口座
+class BankAccount:
+    """銀行口座を表すクラス"""
+    
+    # クラス変数（全口座共通）
+    bank_name = "Python銀行"
+    
+    def __init__(self, account_holder, initial_balance=0):
+        """口座の初期化"""
+        self.account_holder = account_holder  # 口座名義
+        self.__balance = initial_balance     # 残高（プライベート属性）
+        self.transaction_history = []        # 取引履歴
+    
+    @property  # プロパティデコレータ
+    def balance(self):
+        """残高の読み取り専用プロパティ"""
+        return self.__balance
+    
+    def deposit(self, amount):
+        """入金メソッド"""
+        if amount > 0:
+            self.__balance += amount
+            self.transaction_history.append(f"入金: +{amount}円")
+            return f"{amount}円を入金しました。残高: {self.__balance}円"
+        return "入金額は0円より大きくしてください。"
+    
+    def withdraw(self, amount):
+        """出金メソッド"""
+        if 0 < amount <= self.__balance:
+            self.__balance -= amount
+            self.transaction_history.append(f"出金: -{amount}円")
+            return f"{amount}円を出金しました。残高: {self.__balance}円"
+        return "出金できません。残高不足または不正な金額です。"
+    
+    def get_statement(self):
+        """取引履歴の表示"""
+        statement = f"\n{self.bank_name} 取引明細\n"
+        statement += f"口座名義: {self.account_holder}\n"
+        statement += f"現在残高: {self.__balance}円\n"
+        statement += "取引履歴:\n"
+        for transaction in self.transaction_history:
+            statement += f"  - {transaction}\n"
+        return statement
+
+# 銀行口座のシミュレーション
+account = BankAccount("山田太郎", 10000)
+print(account.deposit(5000))    # 5000円を入金しました。残高: 15000円
+print(account.withdraw(3000))   # 3000円を出金しました。残高: 12000円
+print(account.withdraw(20000))  # 出金できません。残高不足または不正な金額です。
+print(account.get_statement())  # 取引明細を表示
+
+# プロパティの使用例
+print(f"現在の残高: {account.balance}円")  # 読み取り専用
+# account.balance = 50000  # エラー: 直接代入はできない
+```
+
+## ⬇️ Markdown セル 10: エラーハンドリング
+```markdown
+## 7. エラーハンドリング
+
+### Python版のエラーハンドリング
+```
+
+## ⬇️ Code セル 16: Python 基本的なエラーハンドリング
+```python
+# 基本的なtry-except文
+def divide_numbers(a, b):
+    """2つの数を割り算する関数"""
+    try:
+        # エラーが発生する可能性のあるコード
+        result = a / b  # ゼロ除算エラーの可能性
+        return result
+    except ZeroDivisionError:  # 特定の例外をキャッチ
+        print(f"エラー: 0で割ることはできません")
+        return None
+    except TypeError:  # 別の例外をキャッチ
+        print(f"エラー: 数値ではない値が渡されました")
+        return None
+    except Exception as e:  # その他の例外をキャッチ
+        print(f"予期せぬエラーが発生しました: {e}")
+        return None
+    finally:  # 常に実行されるブロック
+        print("除算処理が完了しました")
+
+# エラーハンドリングのテスト
+print("=== エラーハンドリングのテスト ===")
+print(f"10 ÷ 2 = {divide_numbers(10, 2)}")    # 5.0
+print(f"10 ÷ 0 = {divide_numbers(10, 0)}")    # None (ZeroDivisionError)
+print(f"'10' ÷ 2 = {divide_numbers('10', 2)}")  # None (TypeError)
+```
+
+## ⬇️ Code セル 17: カスタム例外
+```python
+# カスタム例外の定義
+class InvalidAgeError(Exception):
+    """年齢が不正な場合の例外"""
+    def __init__(self, age):
+        self.age = age
+        super().__init__(f"不正な年齢: {age}")
+
+def validate_age(age):
+    """年齢をバリデーションする関数"""
+    if not isinstance(age, int):  # 整数チェック
+        raise TypeError("年齢は整数で指定してください")
+    
+    if age < 0:  # 年齢が負の値
+        raise InvalidAgeError(age)
+    
+    if age > 150:  # 年齢が150歳を超える
+        raise InvalidAgeError(age)
+    
+    return True
+
+# カスタム例外の使用例
+print("\n=== カスタム例外のテスト ===")
+test_ages = [25, -5, "二十歳", 200]
+
+for test_age in test_ages:
+    try:
+        validate_age(test_age)
+        print(f"{test_age}は有効な年齢です")
+    except InvalidAgeError as e:
+        print(f"カスタムエラー: {e}")
+    except TypeError as e:
+        print(f"型エラー: {e}")
+    except Exception as e:
+        print(f"予期せぬエラー: {e}")
+```
+
+## ⬇️ Code セル 18: 実践的なエラーハンドリング
+```python
+# 実践的なエラーハンドリングの例
+class DataProcessor:
+    """データ処理クラス"""
+    
+    def __init__(self):
+        self.data = []
+        self.errors = []
+    
+    def process_data(self, data_list):
+        """データをバッチ処理する"""
+        for i, item in enumerate(data_list):
+            try:
+                # データのバリデーション
+                self._validate_item(item, i)
+                
+                # データの処理
+                processed = self._process_item(item)
+                self.data.append(processed)
+                
+            except ValueError as e:
+                # バリデーションエラー
+                self.errors.append(f"項目{i}: {str(e)}")
+                continue
+                
+            except Exception as e:
+                # その他のエラー
+                self.errors.append(f"項目{i}: 予期せぬエラー - {str(e)}")
+                continue
+    
+    def _validate_item(self, item, index):
+        """項目のバリデーション"""
+        if not isinstance(item, dict):
+            raise ValueError("辞書形式ではありません")
+        
+        if 'value' not in item:
+            raise ValueError("'value'キーが見つかりません")
+        
+        if not isinstance(item['value'], (int, float)):
+            raise ValueError("'value'は数値である必要があります")
+    
+    def _process_item(self, item):
+        """項目の処理"""
+        # 値を2倍にする処理
+        processed = item.copy()
+        processed['value'] = item['value'] * 2
+        processed['processed'] = True
+        return processed
+    
+    def get_results(self):
+        """処理結果の取得"""
+        return {
+            'success_count': len(self.data),
+            'error_count': len(self.errors),
+            'data': self.data,
+            'errors': self.errors
+        }
+
+# データ処理のテスト
+test_data = [
+    {'value': 10},
+    {'value': 'invalid'},  # エラー: 数値でない
+    {'value': 20},
+    {'name': 'no_value'},  # エラー: valueキーがない
+    {'value': 30}
+]
+
+processor = DataProcessor()
+processor.process_data(test_data)
+results = processor.get_results()
+
+print("\n=== データ処理結果 ===")
+print(f"成功: {results['success_count']}件")
+print(f"エラー: {results['error_count']}件")
+print(f"処理済みデータ: {results['data']}")
+print(f"エラー詳細: {results['errors']}")
+```
+
+## ⬇️ Markdown セル 11: まとめ
+```markdown
+## まとめとベストプラクティス
+
+### Python vs JavaScript 主な違い
+
+1. **変数宣言**
+   - Python: 型推論、代入のみ
+   - JavaScript: var/let/const
+
+2. **インデント**
+   - Python: 必須（意味を持つ）
+   - JavaScript: 任意（スタイル）
+
+3. **文終了**
+   - Python: 改行
+   - JavaScript: セミコロン（省略可）
+
+4. **真偽値**
+   - Python: True/False
+   - JavaScript: true/false
+
+5. **this/self**
+   - Python: self
+   - JavaScript: this
+
+### 学習のポイント
+
+1. **基本文法の理解**
+   - 各言語の特徴を意識する
+   - 小さなプログラムから始める
+
+2. **実践的な例で学ぶ**
+   - 実際のプロジェクトを作る
+   - エラーを恐れずに試す
+
+3. **コメントを書く習慣**
+   - 一行ずつの理解を深める
+   - 後で見返したときに理解しやすい
+
+4. **アウトプットを意識**
+   - 学んだことをすぐに使ってみる
+   - 自分なりの改良を加える
+
+これで基礎文法の対照表は完成です！実際にコードを実行して、違いを体感してください。
+```
+
+## ⬇️ Code セル 19: 練習問題
+```python
+# 練習問題 - 両言語の知識を活かしてPythonで実装
+
+# 問題1: 簡単な電卓を作成
+def calculator(operation, a, b):
+    """簡単な電卓の実装"""
+    try:
+        if operation == '+':
+            return a + b
+        elif operation == '-':
+            return a - b
+        elif operation == '*':
+            return a * b
+        elif operation == '/':
+            if b == 0:
+                raise ValueError("0で割ることはできません")
+            return a / b
+        else:
+            raise ValueError("未対応の操作です")
+    except Exception as e:
+        print(f"エラー: {e}")
+        return None
+
+# 実行例
+print("=== 電卓のテスト ===")
+print(f"10 + 5 = {calculator('+', 10, 5)}")
+print(f"10 / 0 = {calculator('/', 10, 0)}")
+
+# 問題2: 配列の要素をフィルタリング
+numbers = list(range(1, 21))  # 1から20までのリスト
+even_numbers = [n for n in numbers if n % 2 == 0]  # 偶数のフィルタリング
+print(f"\n=== フィルタリング結果 ===")
+print(f"奇数: {[n for n in numbers if n % 2 != 0]}")
+print(f"偶数: {even_numbers}")
+
+# 問題3: オブジェクト/辞書の操作
+tasks = [
+    {"id": 1, "title": "勉強", "completed": True},
+    {"id": 2, "title": "買い物", "completed": False},
+    {"id": 3, "title": "掃除", "completed": False}
+]
+
+# 未完了のタスクを抽出
+incomplete_tasks = [task for task in tasks if not task["completed"]]
+print(f"\n=== TODOリスト ===")
+print(f"未完了のタスク: {[task['title'] for task in incomplete_tasks]}")
+
+# チャレンジ: じゃんけんゲーム（コメントアウトを外して実行可能）
+"""
+import random
+
+def janken_game():
+    choices = ["グー", "チョキ", "パー"]
+    
+    print("\\n=== じゃんけんゲーム ===")
+    print("0: グー, 1: チョキ, 2: パー")
+    
+    try:
+        player_choice = int(input("あなたの選択 (0-2): "))
+        if not 0 <= player_choice <= 2:
+            print("無効な選択です")
+            return
+        
+        computer_choice = random.randint(0, 2)
+        
+        print(f"あなた: {choices[player_choice]}")
+        print(f"コンピュータ: {choices[computer_choice]}")
+        
+        # 勝敗判定
+        if player_choice == computer_choice:
+            print("引き分け！")
+        elif (player_choice == 0 and computer_choice == 1) or \\
+             (player_choice == 1 and computer_choice == 2) or \\
+             (player_choice == 2 and computer_choice == 0):
+            print("あなたの勝ち！")
+        else:
+            print("コンピュータの勝ち！")
+            
+    except ValueError:
+        print("数字を入力してください")
+
+# janken_game()  # コメントを外すと実行可能
+"""
+
+print("\n=== 完了！===")
+print("お疲れ様でした！これで基礎文法の学習が完了です。")
+```
+
+## 📋 セル内容一覧
+
+1. **Markdownセル**: タイトルと目次
+2. **Markdownセル**: 変数宣言の説明
+3. **Codeセル**: Python 変数宣言
+4. **Markdownセル**: JavaScript版の説明
+5. **Codeセル**: Python 変数実行例
+6. **Markdownセル**: データ型の説明
+7. **Codeセル**: Python 基本データ型
+8. **Codeセル**: Python コレクション型
+9. **Markdownセル**: JavaScript データ型の説明
+10. **Markdownセル**: 条件文の説明
+11. **Codeセル**: Python 条件文
+12. **Codeセル**: 実践的な条件文例
+13. **Markdownセル**: ループの説明
+14. **Codeセル**: Python for文
+15. **Codeセル**: Python while文と内包表記
+16. **Codeセル**: 実践的なループ例
+17. **Markdownセル**: 関数の説明
+18. **Codeセル**: Python 基本的な関数
+19. **Codeセル**: Python キーワード引数とラムダ
+20. **Codeセル**: 実践的な関数例
+21. **Markdownセル**: クラスの説明
+22. **Codeセル**: Python 基本的なクラス
+23. **Codeセル**: Python 継承とポリモーフィズム
+24. **Codeセル**: 実践的なクラス例
+25. **Markdownセル**: エラーハンドリングの説明
+26. **Codeセル**: Python 基本的なエラーハンドリング
+27. **Codeセル**: カスタム例外
+28. **Codeセル**: 実践的なエラーハンドリング
+29. **Markdownセル**: まとめ
+30. **Codeセル**: 練習問題
+
+## 🚀 使用方法
+
+1. Google Colabを開く
+2. 新規ノートブックを作成
+3. 上記のセル内容を順番にコピペ
+4. 各セルを実行して学習

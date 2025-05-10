@@ -1,0 +1,993 @@
+# Python vs JavaScript 基礎文法対照表
+
+## 📚 Google Colabで学ぶプログラミング基礎
+
+このノートブックでは、PythonとJavaScriptの基礎文法を対照表形式で学習できます。
+
+## 目次
+1. [変数宣言](#1-変数宣言)
+2. [データ型](#2-データ型)
+3. [条件文](#3-条件文)
+4. [ループ](#4-ループ)
+5. [関数](#5-関数)
+6. [クラス](#6-クラス)
+7. [エラーハンドリング](#7-エラーハンドリング)
+
+---
+
+## 1. 変数宣言
+
+### Python版
+```python
+# 基本的な変数宣言（型推論）
+name = "山田太郎"  # 文字列型の変数
+age = 25  # 整数型の変数
+height = 175.5  # 浮動小数点型の変数
+
+# Pythonは型推論が自動で行われる
+print(f"名前: {name}, 年齢: {age}, 身長: {height}cm")
+```
+
+```python
+# JavaScript版をPythonでシミュレーション
+"""
+JavaScript版のコード：
+
+// 変数宣言（var - 旧式）
+var name = "山田太郎";  // スコープが関数レベル
+var age = 25;  // 再代入可能
+var height = 175.5;  // 巻き上げの対象
+
+// 変数宣言（let - 推奨）
+let name2 = "鈴木花子";  // ブロックスコープ
+let age2 = 23;  // 再代入可能
+let height2 = 162.0;  // 巻き上げされない
+
+// 定数宣言（const - 推奨）
+const PI = 3.14159;  // 再代入不可
+const colors = ["red", "blue", "green"];  // オブジェクトの中身は変更可能
+
+console.log(`名前: ${name}, 年齢: ${age}, 身長: ${height}cm`);
+"""
+```
+
+### 実行例
+```python
+# 実際に動かしてみよう
+name = "山田太郎"  # 変数に文字列を代入
+age = 25  # 変数に数値を代入
+height = 175.5  # 変数に小数を代入
+
+# f-stringを使った文字列フォーマット
+print(f"名前: {name}, 年齢: {age}, 身長: {height}cm")
+
+# 変数の型を確認
+print(f"nameの型: {type(name)}")  # <class 'str'>
+print(f"ageの型: {type(age)}")  # <class 'int'>
+print(f"heightの型: {type(height)}")  # <class 'float'>
+```
+
+---
+
+## 2. データ型
+
+### Python版
+```python
+# 基本的なデータ型
+# 文字列 (string)
+greeting = "こんにちは"  # シングルまたはダブルクォートで囲む
+multiline = """複数行の
+文字列も可能"""  # 3つのクォートで複数行
+
+# 数値 (number)
+integer_num = 42  # 整数
+float_num = 3.14  # 浮動小数点数
+complex_num = 1 + 2j  # 複素数（Pythonのみ）
+
+# 真偽値 (boolean)
+is_student = True  # TrueまたはFalse（大文字始まり）
+is_working = False
+
+# None型
+empty_value = None  # 値がないことを表す
+```
+
+```python
+# コレクション型
+# リスト (list) - 順序あり、変更可能
+fruits = ["apple", "banana", "orange"]  # 角括弧で囲む
+numbers = [1, 2, 3, 4, 5]  # 異なる型も混在可能
+
+# タプル (tuple) - 順序あり、変更不可
+coordinates = (10, 20)  # 丸括弧で囲む
+rgb = (255, 128, 0)  # 色情報などに使用
+
+# 辞書 (dictionary) - キーと値のペア
+user = {
+    "name": "田中",  # キーはクォートで囲む
+    "age": 30,  # 値は任意の型
+    "email": "tanaka@example.com"
+}
+
+# 集合 (set) - 重複なし、順序なし
+unique_numbers = {1, 2, 3, 3, 4, 4, 5}  # 重複は自動で削除される
+```
+
+### JavaScript版のコメント
+```python
+"""
+JavaScript版のデータ型：
+
+// 文字列 (string)
+const greeting = "こんにちは";  // シングルまたはダブルクォート
+const template = `テンプレート文字列
+複数行対応
+${変数}埋め込み可能`;  // バッククォートで囲む
+
+// 数値 (number)
+const integer = 42;  // 整数
+const float = 3.14;  // 浮動小数点数（区別なし）
+
+// 真偽値 (boolean)
+const isStudent = true;  // true または false（小文字）
+const isWorking = false;
+
+// undefined と null
+let empty;  // undefined（宣言のみ）
+const empty2 = null;  // null（意図的に空）
+
+// 配列 (array)
+const fruits = ["apple", "banana", "orange"];  // 角括弧
+const mixed = [1, "two", true, null];  // 異なる型も混在可能
+
+// オブジェクト (object)
+const user = {
+    name: "田中",  // キーはクォート省略可能
+    age: 30,
+    email: "tanaka@example.com"
+};
+
+// Map と Set
+const map = new Map();  // キーと値のペア
+const set = new Set([1, 2, 3, 3, 4]);  // 重複なし
+"""
+```
+
+### 実行例
+```python
+# データ型の実践例
+# リストの操作
+fruits = ["apple", "banana", "orange"]  # リストの初期化
+fruits.append("grape")  # 末尾に追加
+print(f"フルーツリスト: {fruits}")  # ['apple', 'banana', 'orange', 'grape']
+
+# 辞書の操作
+user = {"name": "田中", "age": 30}  # 辞書の初期化
+user["email"] = "tanaka@example.com"  # 新しいキーを追加
+print(f"ユーザー情報: {user}")  # {'name': '田中', 'age': 30, 'email': 'tanaka@example.com'}
+
+# 型チェック
+print(f"fruitsの型: {type(fruits)}")  # <class 'list'>
+print(f"userの型: {type(user)}")  # <class 'dict'>
+```
+
+---
+
+## 3. 条件文
+
+### Python版
+```python
+# if文の基本構文
+score = 85  # テストの点数
+grade = ""  # 成績を格納する変数
+
+# if-elif-else構文
+if score >= 90:  # 90点以上の場合
+    grade = "A"
+elif score >= 80:  # 80点以上90点未満の場合
+    grade = "B"
+elif score >= 70:  # 70点以上80点未満の場合
+    grade = "C"
+elif score >= 60:  # 60点以上70点未満の場合
+    grade = "D"
+else:  # 60点未満の場合
+    grade = "F"
+
+print(f"点数: {score}, 成績: {grade}")  # 点数: 85, 成績: B
+```
+
+```python
+# 論理演算子
+age = 20  # 年齢
+is_student = True  # 学生かどうか
+
+# and演算子（すべての条件が真）
+if age >= 18 and age <= 25 and is_student:
+    print("学生割引が適用されます")
+
+# or演算子（いずれかの条件が真）
+if age < 18 or is_student:
+    print("何らかの割引が適用されます")
+
+# not演算子（条件の否定）
+if not is_student:
+    print("一般料金になります")
+```
+
+### JavaScript版のコメント
+```python
+"""
+JavaScript版の条件文：
+
+// if文の基本構文
+const score = 85;
+let grade = "";
+
+// if-else if-else構文
+if (score >= 90) {  // 括弧とブレースが必要
+    grade = "A";
+} else if (score >= 80) {
+    grade = "B";
+} else if (score >= 70) {
+    grade = "C";
+} else if (score >= 60) {
+    grade = "D";
+} else {
+    grade = "F";
+}
+
+// 三項演算子
+const grade = score >= 60 ? "合格" : "不合格";
+
+// switch文
+switch (grade) {
+    case "A":
+        console.log("優秀");
+        break;
+    case "B":
+        console.log("良好");
+        break;
+    default:
+        console.log("要努力");
+}
+"""
+```
+
+### 実行例
+```python
+# 実践的な条件文の例
+def check_ticket_price(age, is_student):
+    """チケット料金を決定する関数"""
+    
+    # 年齢による基本料金
+    if age < 12:  # 12歳未満
+        base_price = 500
+        category = "子供"
+    elif age >= 65:  # 65歳以上
+        base_price = 1000
+        category = "シニア"
+    else:  # 12歳以上65歳未満
+        base_price = 1500
+        category = "一般"
+    
+    # 学生割引の適用
+    if is_student and 18 <= age <= 25:  # 18-25歳の学生
+        discount = 300
+        category += "（学生割引）"
+    else:
+        discount = 0
+    
+    # 最終料金の計算
+    final_price = base_price - discount
+    
+    return final_price, category
+
+# 実行例
+price, cat = check_ticket_price(22, True)
+print(f"料金: {price}円, カテゴリ: {cat}")  # 料金: 1200円, カテゴリ: 一般（学生割引）
+```
+
+---
+
+## 4. ループ
+
+### Python版
+```python
+# for文 - リストの要素を反復
+fruits = ["apple", "banana", "orange", "grape"]  # リストの定義
+
+# 基本的なfor文
+for fruit in fruits:  # 各要素に対して処理
+    print(f"くだもの: {fruit}")  # apple, banana, orange, grapeが順に出力
+
+# インデックス付きfor文
+for index, fruit in enumerate(fruits):  # enumerateでインデックスも取得
+    print(f"{index + 1}番目: {fruit}")  # 1番目: apple, 2番目: banana...
+```
+
+```python
+# range関数を使ったfor文
+# range(start, stop, step)
+for i in range(5):  # 0から4まで
+    print(f"カウント: {i}")  # 0, 1, 2, 3, 4
+
+for i in range(1, 11):  # 1から10まで
+    print(f"数字: {i}")  # 1, 2, 3, ..., 10
+
+for i in range(0, 21, 5):  # 0から20まで5刻み
+    print(f"5の倍数: {i}")  # 0, 5, 10, 15, 20
+```
+
+```python
+# while文 - 条件が真の間繰り返す
+count = 0  # カウンター変数
+max_count = 5  # 最大回数
+
+while count < max_count:  # 条件式
+    print(f"while実行回数: {count}")  # 0, 1, 2, 3, 4
+    count += 1  # カウンターをインクリメント
+
+# breakとcontinue
+for i in range(10):
+    if i == 5:  # i が 5 の時
+        break  # ループを終了
+    if i % 2 == 0:  # 偶数の時
+        continue  # 次の反復へスキップ
+    print(f"奇数: {i}")  # 1, 3（5は到達せず）
+```
+
+### JavaScript版のコメント
+```python
+"""
+JavaScript版のループ：
+
+// for文 - 基本構文
+for (let i = 0; i < fruits.length; i++) {  // 初期化; 条件; 増分
+    console.log(`くだもの: ${fruits[i]}`);
+}
+
+// for...of - 要素の反復（ES6+）
+for (const fruit of fruits) {
+    console.log(`くだもの: ${fruit}`);
+}
+
+// for...in - キーの反復
+for (const key in object) {
+    console.log(`${key}: ${object[key]}`);
+}
+
+// forEach - 配列メソッド
+fruits.forEach((fruit, index) => {
+    console.log(`${index + 1}番目: ${fruit}`);
+});
+
+// while文
+let count = 0;
+while (count < 5) {
+    console.log(`while実行回数: ${count}`);
+    count++;
+}
+
+// do...while文
+do {
+    // 最低1回は実行される
+} while (condition);
+"""
+```
+
+### 実行例
+```python
+# 実践的なループの例
+def multiplication_table(number):
+    """九九表を作成する関数"""
+    print(f"{number}の段:")
+    for i in range(1, 10):  # 1から9まで
+        result = number * i  # 掛け算の結果
+        print(f"{number} × {i} = {result}")  # 結果を出力
+    print("-" * 20)  # 区切り線
+
+# 複数の段を出力
+for n in range(1, 4):  # 1の段から3の段まで
+    multiplication_table(n)
+```
+
+### 内包表記（Pythonの特徴）
+```python
+# リスト内包表記
+# 基本形: [式 for 変数 in イテラブル]
+squares = [x**2 for x in range(1, 6)]  # 1から5までの2乗
+print(f"2乗のリスト: {squares}")  # [1, 4, 9, 16, 25]
+
+# 条件付き内包表記
+# [式 for 変数 in イテラブル if 条件]
+even_squares = [x**2 for x in range(1, 11) if x % 2 == 0]  # 偶数の2乗
+print(f"偶数の2乗: {even_squares}")  # [4, 16, 36, 64, 100]
+
+# 辞書内包表記
+words = ["apple", "banana", "cherry"]
+word_lengths = {word: len(word) for word in words}  # 単語と長さの辞書
+print(f"単語の長さ: {word_lengths}")  # {'apple': 5, 'banana': 6, 'cherry': 6}
+```
+
+---
+
+## 5. 関数
+
+### Python版
+```python
+# 基本的な関数定義
+def greet(name):  # def キーワードで関数を定義
+    """挨拶をする関数"""  # ドキュメントstring（省略可）
+    message = f"こんにちは、{name}さん！"  # ローカル変数
+    return message  # 戻り値を指定
+
+# 関数の呼び出し
+result = greet("田中")  # 引数を渡して実行
+print(result)  # "こんにちは、田中さん！"
+```
+
+```python
+# デフォルト引数
+def introduce(name, age=25, city="東京"):  # デフォルト値を設定
+    """自己紹介をする関数"""
+    return f"私は{name}、{age}歳、{city}在住です。"
+
+# デフォルト引数の使用
+print(introduce("佐藤"))  # 私は佐藤、25歳、東京在住です。
+print(introduce("鈴木", 30))  # 私は鈴木、30歳、東京在住です。
+print(introduce("田中", 35, "大阪"))  # 私は田中、35歳、大阪在住です。
+```
+
+```python
+# キーワード引数
+def create_profile(name, **kwargs):  # **kwargsで可変キーワード引数
+    """プロフィールを作成する関数"""
+    profile = {"name": name}  # 基本プロフィール
+    
+    # 追加情報を統合
+    profile.update(kwargs)  # 辞書にキーワード引数を追加
+    
+    return profile
+
+# キーワード引数の使用
+user1 = create_profile("山田", age=30, city="東京", job="エンジニア")
+print(f"ユーザー1: {user1}")  # {'name': '山田', 'age': 30, 'city': '東京', 'job': 'エンジニア'}
+```
+
+### JavaScript版のコメント
+```python
+"""
+JavaScript版の関数：
+
+// 関数宣言
+function greet(name) {  // function キーワードで定義
+    const message = `こんにちは、${name}さん！`;
+    return message;  // return で値を返す
+}
+
+// 関数式
+const greet2 = function(name) {
+    // 関数を変数に代入
+    return `こんにちは、${name}さん！`;
+};
+
+// アロー関数（ES6+）
+const greet3 = (name) => {
+    return `こんにちは、${name}さん！`;
+};
+
+// アロー関数（省略形）
+const greet4 = name => `こんにちは、${name}さん！`;
+
+// デフォルト引数
+function introduce(name, age = 25, city = "東京") {
+    return `私は${name}、${age}歳、${city}在住です。`;
+}
+
+// レストパラメータ（可変引数）
+function sum(...numbers) {
+    return numbers.reduce((acc, num) => acc + num, 0);
+}
+
+// 分割代入
+function createUser({name, age, ...rest}) {
+    // オブジェクトから値を取り出す
+    return {name, age, ...rest};
+}
+"""
+```
+
+### 実行例
+```python
+# 実践的な関数の例
+def calculate_statistics(numbers):
+    """数値リストの統計情報を計算する関数"""
+    
+    if not numbers:  # 空リストのチェック
+        return None
+    
+    # 各統計値の計算
+    total = sum(numbers)  # 合計
+    count = len(numbers)  # 個数
+    average = total / count  # 平均
+    minimum = min(numbers)  # 最小値
+    maximum = max(numbers)  # 最大値
+    
+    # 結果を辞書で返す
+    return {
+        "total": total,
+        "count": count,
+        "average": average,
+        "min": minimum,
+        "max": maximum
+    }
+
+# 関数のテスト
+test_numbers = [10, 20, 30, 40, 50]
+stats = calculate_statistics(test_numbers)
+print(f"統計情報: {stats}")
+# 統計情報: {'total': 150, 'count': 5, 'average': 30.0, 'min': 10, 'max': 50}
+```
+
+### ラムダ関数（無名関数）
+```python
+# lambda式 - 簡潔な関数定義
+# lambda 引数: 式
+square = lambda x: x ** 2  # 2乗を計算するラムダ
+print(f"5の2乗: {square(5)}")  # 5の2乗: 25
+
+# リストと一緒に使用
+numbers = [1, 2, 3, 4, 5]
+squared = list(map(lambda x: x ** 2, numbers))  # 各要素を2乗
+print(f"2乗のリスト: {squared}")  # [1, 4, 9, 16, 25]
+
+# ソートのキーとして使用
+fruits = ["banana", "apple", "cherry"]
+sorted_fruits = sorted(fruits, key=lambda x: len(x))  # 長さでソート
+print(f"長さでソート: {sorted_fruits}")  # ['apple', 'banana', 'cherry']
+```
+
+---
+
+## 6. クラス
+
+### Python版
+```python
+# 基本的なクラス定義
+class Person:  # class キーワードでクラスを定義
+    """人物を表すクラス"""
+    
+    # クラス変数（全インスタンス共通）
+    species = "Human"
+    
+    def __init__(self, name, age):  # コンストラクタ
+        """インスタンスの初期化"""
+        self.name = name  # インスタンス変数
+        self.age = age    # インスタンス変数
+    
+    def introduce(self):  # インスタンスメソッド
+        """自己紹介をするメソッド"""
+        return f"私は{self.name}、{self.age}歳です。"
+    
+    def have_birthday(self):  # インスタンスメソッド
+        """誕生日を迎えるメソッド"""
+        self.age += 1  # 年齢をインクリメント
+        return f"誕生日おめでとう！{self.age}歳になりました。"
+
+# インスタンスの作成と使用
+person1 = Person("田中", 25)  # インスタンス生成
+print(person1.introduce())  # 私は田中、25歳です。
+print(person1.have_birthday())  # 誕生日おめでとう！26歳になりました。
+```
+
+```python
+# 継承とポリモーフィズム
+class Student(Person):  # Personクラスを継承
+    """学生を表すクラス"""
+    
+    def __init__(self, name, age, student_id):
+        super().__init__(name, age)  # 親クラスの初期化を呼び出す
+        self.student_id = student_id  # 学生固有の属性
+    
+    def introduce(self):  # メソッドのオーバーライド
+        """学生用の自己紹介"""
+        base_intro = super().introduce()  # 親クラスのメソッドを使用
+        return f"{base_intro} 学生番号は{self.student_id}です。"
+    
+    def study(self, subject):  # 学生固有のメソッド
+        """勉強するメソッド"""
+        return f"{self.name}は{subject}を勉強しています。"
+
+# 継承したクラスの使用
+student1 = Student("佐藤", 20, "S12345")
+print(student1.introduce())  # 私は佐藤、20歳です。 学生番号はS12345です。
+print(student1.study("Python"))  # 佐藤はPythonを勉強しています。
+```
+
+### JavaScript版のコメント
+```python
+"""
+JavaScript版のクラス：
+
+// ES6のクラス構文
+class Person {
+    // 静的プロパティ
+    static species = "Human";
+    
+    // コンストラクタ
+    constructor(name, age) {
+        this.name = name;  // インスタンスプロパティ
+        this.age = age;
+    }
+    
+    // インスタンスメソッド
+    introduce() {
+        return `私は${this.name}、${this.age}歳です。`;
+    }
+    
+    // ゲッター
+    get info() {
+        return `${this.name} (${this.age})`;
+    }
+    
+    // セッター
+    set newAge(age) {
+        if (age >= 0) this.age = age;
+    }
+    
+    // 静的メソッド
+    static compareAge(person1, person2) {
+        return person1.age - person2.age;
+    }
+}
+
+// 継承
+class Student extends Person {
+    constructor(name, age, studentId) {
+        super(name, age);  // 親クラスのコンストラクタ
+        this.studentId = studentId;
+    }
+    
+    // メソッドのオーバーライド
+    introduce() {
+        return `${super.introduce()} 学生番号は${this.studentId}です。`;
+    }
+}
+
+// プロトタイプベースの継承（旧式）
+function PersonOld(name, age) {
+    this.name = name;
+    this.age = age;
+}
+
+PersonOld.prototype.introduce = function() {
+    return `私は${this.name}、${this.age}歳です。`;
+};
+"""
+```
+
+### 実行例
+```python
+# 実践的なクラスの例
+class BankAccount:
+    """銀行口座を表すクラス"""
+    
+    # クラス変数（全口座共通）
+    bank_name = "Python銀行"
+    
+    def __init__(self, account_holder, initial_balance=0):
+        """口座の初期化"""
+        self.account_holder = account_holder  # 口座名義
+        self.__balance = initial_balance     # 残高（プライベート属性）
+        self.transaction_history = []        # 取引履歴
+    
+    @property  # プロパティデコレータ
+    def balance(self):
+        """残高の読み取り専用プロパティ"""
+        return self.__balance
+    
+    def deposit(self, amount):
+        """入金メソッド"""
+        if amount > 0:
+            self.__balance += amount
+            self.transaction_history.append(f"入金: +{amount}円")
+            return f"{amount}円を入金しました。残高: {self.__balance}円"
+        return "入金額は0円より大きくしてください。"
+    
+    def withdraw(self, amount):
+        """出金メソッド"""
+        if 0 < amount <= self.__balance:
+            self.__balance -= amount
+            self.transaction_history.append(f"出金: -{amount}円")
+            return f"{amount}円を出金しました。残高: {self.__balance}円"
+        return "出金できません。残高不足または不正な金額です。"
+    
+    def get_statement(self):
+        """取引履歴の表示"""
+        statement = f"\n{self.bank_name} 取引明細\n"
+        statement += f"口座名義: {self.account_holder}\n"
+        statement += f"現在残高: {self.__balance}円\n"
+        statement += "取引履歴:\n"
+        for transaction in self.transaction_history:
+            statement += f"  - {transaction}\n"
+        return statement
+
+# 銀行口座のシミュレーション
+account = BankAccount("山田太郎", 10000)
+print(account.deposit(5000))    # 5000円を入金しました。残高: 15000円
+print(account.withdraw(3000))   # 3000円を出金しました。残高: 12000円
+print(account.withdraw(20000))  # 出金できません。残高不足または不正な金額です。
+print(account.get_statement())  # 取引明細を表示
+```
+
+---
+
+## 7. エラーハンドリング
+
+### Python版
+```python
+# 基本的なtry-except文
+def divide_numbers(a, b):
+    """2つの数を割り算する関数"""
+    try:
+        # エラーが発生する可能性のあるコード
+        result = a / b  # ゼロ除算エラーの可能性
+        return result
+    except ZeroDivisionError:  # 特定の例外をキャッチ
+        print(f"エラー: 0で割ることはできません")
+        return None
+    except TypeError:  # 別の例外をキャッチ
+        print(f"エラー: 数値ではない値が渡されました")
+        return None
+    except Exception as e:  # その他の例外をキャッチ
+        print(f"予期せぬエラーが発生しました: {e}")
+        return None
+    finally:  # 常に実行されるブロック
+        print("除算処理が完了しました")
+
+# エラーハンドリングのテスト
+print(divide_numbers(10, 2))    # 5.0
+print(divide_numbers(10, 0))    # None (ZeroDivisionError)
+print(divide_numbers("10", 2))  # None (TypeError)
+```
+
+```python
+# カスタム例外の定義
+class InvalidAgeError(Exception):
+    """年齢が不正な場合の例外"""
+    def __init__(self, age):
+        self.age = age
+        super().__init__(f"不正な年齢: {age}")
+
+def validate_age(age):
+    """年齢をバリデーションする関数"""
+    if not isinstance(age, int):  # 整数チェック
+        raise TypeError("年齢は整数で指定してください")
+    
+    if age < 0:  # 年齢が負の値
+        raise InvalidAgeError(age)
+    
+    if age > 150:  # 年齢が150歳を超える
+        raise InvalidAgeError(age)
+    
+    return True
+
+# カスタム例外の使用
+try:
+    validate_age(-5)
+except InvalidAgeError as e:
+    print(f"カスタムエラー: {e}")  # カスタムエラー: 不正な年齢: -5
+except TypeError as e:
+    print(f"型エラー: {e}")
+```
+
+### JavaScript版のコメント
+```python
+"""
+JavaScript版のエラーハンドリング：
+
+// try-catch-finally文
+function divideNumbers(a, b) {
+    try {
+        // エラーが発生する可能性のあるコード
+        if (b === 0) {
+            throw new Error("0で割ることはできません");
+        }
+        return a / b;
+    } catch (error) {
+        // エラーをキャッチ
+        console.error(`エラー: ${error.message}`);
+        return null;
+    } finally {
+        // 常に実行されるブロック
+        console.log("除算処理が完了しました");
+    }
+}
+
+// カスタムエラークラス
+class InvalidAgeError extends Error {
+    constructor(age) {
+        super(`不正な年齢: ${age}`);
+        this.name = "InvalidAgeError";
+        this.age = age;
+    }
+}
+
+// Promiseのエラーハンドリング
+fetch('/api/data')
+    .then(response => response.json())
+    .catch(error => {
+        console.error('APIエラー:', error);
+    })
+    .finally(() => {
+        console.log('処理完了');
+    });
+
+// async/awaitのエラーハンドリング
+async function fetchData() {
+    try {
+        const response = await fetch('/api/data');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('エラー:', error);
+        throw error;  // 再スロー
+    }
+}
+"""
+```
+
+### 実行例
+```python
+# 実践的なエラーハンドリングの例
+class DataProcessor:
+    """データ処理クラス"""
+    
+    def __init__(self):
+        self.data = []
+        self.errors = []
+    
+    def process_data(self, data_list):
+        """データをバッチ処理する"""
+        for i, item in enumerate(data_list):
+            try:
+                # データのバリデーション
+                self._validate_item(item, i)
+                
+                # データの処理
+                processed = self._process_item(item)
+                self.data.append(processed)
+                
+            except ValueError as e:
+                # バリデーションエラー
+                self.errors.append(f"項目{i}: {str(e)}")
+                continue
+                
+            except Exception as e:
+                # その他のエラー
+                self.errors.append(f"項目{i}: 予期せぬエラー - {str(e)}")
+                continue
+    
+    def _validate_item(self, item, index):
+        """項目のバリデーション"""
+        if not isinstance(item, dict):
+            raise ValueError("辞書形式ではありません")
+        
+        if 'value' not in item:
+            raise ValueError("'value'キーが見つかりません")
+        
+        if not isinstance(item['value'], (int, float)):
+            raise ValueError("'value'は数値である必要があります")
+    
+    def _process_item(self, item):
+        """項目の処理"""
+        # 値を2倍にする処理
+        processed = item.copy()
+        processed['value'] = item['value'] * 2
+        processed['processed'] = True
+        return processed
+    
+    def get_results(self):
+        """処理結果の取得"""
+        return {
+            'success_count': len(self.data),
+            'error_count': len(self.errors),
+            'data': self.data,
+            'errors': self.errors
+        }
+
+# データ処理のテスト
+test_data = [
+    {'value': 10},
+    {'value': 'invalid'},  # エラー: 数値でない
+    {'value': 20},
+    {'name': 'no_value'},  # エラー: valueキーがない
+    {'value': 30}
+]
+
+processor = DataProcessor()
+processor.process_data(test_data)
+results = processor.get_results()
+
+print(f"処理結果: {results}")
+```
+
+---
+
+## まとめとベストプラクティス
+
+### Python vs JavaScript 主な違い
+
+1. **変数宣言**
+   - Python: 型推論、代入のみ
+   - JavaScript: var/let/const
+
+2. **インデント**
+   - Python: 必須（意味を持つ）
+   - JavaScript: 任意（スタイル）
+
+3. **文終了**
+   - Python: 改行
+   - JavaScript: セミコロン（省略可）
+
+4. **真偽値**
+   - Python: True/False
+   - JavaScript: true/false
+
+5. **文字列**
+   - Python: 'または"
+   - JavaScript: 'または"またはバッククォート
+
+6. **配列/リスト**
+   - Python: []
+   - JavaScript: []
+
+7. **辞書/オブジェクト**
+   - Python: {}
+   - JavaScript: {}
+
+8. **関数定義**
+   - Python: def name():
+   - JavaScript: function name() {}
+
+9. **クラス**
+   - Python: class Name:
+   - JavaScript: class Name {}
+
+10. **this/self**
+    - Python: self
+    - JavaScript: this
+
+### 学習のポイント
+
+1. **基本文法の理解**
+   - 各言語の特徴を意識する
+   - 小さなプログラムから始める
+
+2. **実践的な例で学ぶ**
+   - 実際のプロジェクトを作る
+   - エラーを恐れずに試す
+
+3. **ベストプラクティスを学ぶ**
+   - PEP 8（Python）、ESLint（JavaScript）
+   - 命名規則、コメントの書き方
+
+4. **アウトプットを意識**
+   - 学んだことをブログに書く
+   - GitHubでコードを公開
+
+---
+
+## 練習問題
+
+### 基礎問題
+1. 両言語で簡単な電卓を作成
+2. 配列の要素をフィルタリング
+3. オブジェクト/辞書の操作
+
+### 応用問題
+1. TODOリストの実装
+2. 簡単なゲーム（じゃんけんなど）
+3. データ分析の基礎
+
+これで基礎文法の対照表は完成です！実際にコードを実行して、違いを体感してください。

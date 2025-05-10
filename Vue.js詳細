@@ -650,3 +650,958 @@ const LazyComponent = defineAsyncComponent(() => import('./LazyComponent.vue'))
   </keep-alive>
 </template>
 ```
+## Vue Router - ルーティング管理
+
+### 基本的なルーター設定
+```javascript
+// router/index.js
+// VueRouterをインポート
+import { createRouter, createWebHistory } from 'vue-router'
+// コンポーネントをインポート
+import Home from '../views/Home.vue'
+
+// ルート定義配列
+const routes = [
+  {
+    // URLパス
+    path: '/',
+    // ルート名（オプション）
+    name: 'Home',
+    // このルートで使用するコンポーネント
+    component: Home
+  },
+  {
+    path: '/about',
+    name: 'About',
+    // 動的インポート（コード分割）
+    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+  },
+  {
+    // 動的ルート（:idが変数部分）
+    path: '/user/:id',
+    name: 'User',
+    component: () => import('../views/User.vue'),
+    // ルートにPropsを渡す
+    props: true
+  },
+  {
+    // ネストされたルート
+    path: '/dashboard',
+    component: () => import('../views/Dashboard.vue'),
+    children: [
+      {
+        // 相対パス（親の/dashboardに続く）
+        path: 'profile',
+        component: () => import('../views/Profile.vue')
+      }
+    ]
+  }
+]
+
+// ルーターインスタンスを作成
+const router = createRouter({
+  // HTML5 History APIを使用
+  history: createWebHistory(process.env.BASE_URL),
+  // 定義したルートを適用
+  routes
+})
+
+// beforeEachガード：すべてのナビゲーション前に実行
+router.beforeEach((to, from, next) => {
+  // 認証が必要なルートのチェック
+  if (to.meta.requiresAuth && !isAuthenticated()) {
+    // 未認証ならログインページへリダイレクト
+    next('/login')
+  } else {
+    // 認証済みまたは認証不要なら続行
+    next()
+  }
+})
+
+// ルーターをエクスポート
+export default router
+```
+
+### ルーターの使用方法
+```vue
+<template>
+  <!-- ナビゲーション用のリンク -->
+  <!-- router-linkは自動的に現在のルートにactiveクラスを付与 -->
+  <nav>
+    <router-link to="/">ホーム</router-link>
+    <router-link to="/about">概要</router-link>
+    <!-- named routeの使用 -->
+    <router-link :to="{ name: 'User', params: { id: userId } }">
+      ユーザー
+    </router-link>
+  </nav>
+  
+  <!-- ルートコンポーネントが表示される場所 -->
+  <router-view></router-view>
+</template>
+
+<script setup>
+// ルーターのコンポーザブル関数
+import { useRouter, useRoute } from 'vue-router'
+
+// ルーターインスタンスを取得（ナビゲーション用）
+const router = useRouter()
+// 現在のルート情報を取得
+const route = useRoute()
+
+// プログラマティックナビゲーション
+const goToUser = (id) => {
+  // 文字列パス
+  router.push(`/user/${id}`)
+  
+  // オブジェクト形式
+  router.push({ name: 'User', params: { id } })
+  
+  // クエリパラメータの追加
+  router.push({ 
+    path: '/search', 
+    query: { q: 'vue' } 
+  }) // /search?q=vue
+}
+
+// ブラウザ履歴を操作せずに置き換える
+const replaceRoute = () => {
+  router.replace('/dashboard')
+}
+
+// 履歴を戻る
+const goBack = () => {
+  router.go(-1)
+}
+
+// ルートパラメータの監視
+watchEffect(() => {
+  console.log('現在のユーザーID:', route.params.id)
+})
+</script>
+```
+
+## カスタムディレクティブ - 一行ずつ解説
+
+### カスタムディレクティブの作成
+```javascript
+// グローバルディレクティブの定義
+const app = createApp({})
+app.directive('focus', {
+  // el: ディレクティブが適用される要素
+  // binding: v-directiveの値、引数、修飾子などの情報
+  // vnode: Vue仮想ノード
+  mounted(el, binding, vnode) {
+    // 要素にフォーカスを当てる
+    el.focus()
+  }
+})
+
+// より複雑なディレクティブ例
+app.directive('highlight', {
+  // コンポーネントマウント時
+  mounted(el, binding) {
+    // binding.valueにはv-highlight="'yellow'"の'yellow'が入る
+    el.style.backgroundColor = binding.value || 'yellow'
+  },
+  // 値が更新された時
+  updated(el, binding) {
+    // 新しい値で背景色を更新
+    el.style.backgroundColor = binding.value || 'yellow'
+  }
+})
+
+// 引数付きディレクティブ
+app.directive('color', {
+  mounted(el, binding) {
+    // binding.argにはv-color:textのtextが入る
+    const property = binding.arg || 'color'
+    // 指定されたCSSプロパティを設定
+    el.style[property] = binding.value
+  }
+})
+
+// 修飾子付きディレクティブ
+app.directive('scroll', {
+  mounted(el, binding) {
+    // binding.modifiersはオブジェクト形式
+    if (binding.modifiers.smooth) {
+      // v-scroll.smoothの場合
+      el.style.scrollBehavior = 'smooth'
+    }
+  }
+})
+```
+
+### ローカルディレクティブの使用
+```vue
+<template>
+  <!-- カスタムディレクティブの使用例 -->
+  <input v-focus>
+  <div v-highlight="'lightblue'">ハイライト</div>
+  <span v-color:text="'red'">赤文字</span>
+  <div v-scroll.smooth>スムーズスクロール</div>
+</template>
+
+<script setup>
+// コンポーネント内でディレクティブを定義
+const vFocus = {
+  mounted(el) {
+    el.focus()
+  }
+}
+
+// 複雑なディレクティブ
+const vClickOutside = {
+  mounted(el, binding) {
+    // クリックイベントハンドラーを定義
+    el.clickOutsideEvent = function(event) {
+      // クリックが要素外の場合
+      if (!(el === event.target || el.contains(event.target))) {
+        // binding.valueの関数を実行
+        binding.value(event)
+      }
+    }
+    // documentにイベントリスナーを追加
+    document.addEventListener('click', el.clickOutsideEvent)
+  },
+  unmounted(el) {
+    // クリーンアップ：イベントリスナーを削除
+    document.removeEventListener('click', el.clickOutsideEvent)
+  }
+}
+</script>
+```
+
+## 高度なコンポーネントパターン
+
+### プロバイド/インジェクト
+```vue
+<!-- 親コンポーネント -->
+<script setup>
+import { provide, ref } from 'vue'
+
+// リアクティブな値を提供
+const theme = ref('light')
+const user = ref({ name: '田中', role: 'admin' })
+
+// provide(key, value)で値を提供
+provide('theme', theme)
+provide('user', user)
+
+// 関数も提供可能
+provide('toggleTheme', () => {
+  theme.value = theme.value === 'light' ? 'dark' : 'light'
+})
+</script>
+
+<!-- 深くネストされた子コンポーネント -->
+<script setup>
+import { inject } from 'vue'
+
+// inject(key, defaultValue)で値を注入
+const theme = inject('theme', 'light')
+const user = inject('user')
+const toggleTheme = inject('toggleTheme')
+
+// 注入された値は通常のrefと同様に使用可能
+watchEffect(() => {
+  console.log('現在のテーマ:', theme.value)
+})
+</script>
+```
+
+### 動的コンポーネント
+```vue
+<template>
+  <!-- 動的にコンポーネントを切り替える -->
+  <component 
+    :is="currentComponent" 
+    :prop1="data1"
+    @event="handleEvent"
+  />
+  
+  <!-- KeepAliveでコンポーネントの状態を保持 -->
+  <keep-alive>
+    <!-- includeで特定のコンポーネントのみ保持 -->
+    <component 
+      :is="currentComponent" 
+      v-if="currentComponent"
+    />
+  </keep-alive>
+  
+  <!-- Teleportで要素を別の場所に移動 -->
+  <teleport to="#modal-container">
+    <div v-if="showModal" class="modal">
+      モーダルコンテンツ
+    </div>
+  </teleport>
+</template>
+
+<script setup>
+import { ref, shallowRef, defineAsyncComponent } from 'vue'
+import ComponentA from './ComponentA.vue'
+import ComponentB from './ComponentB.vue'
+
+// shallowRefでコンポーネントを管理（深いリアクティブを避ける）
+const currentComponent = shallowRef(ComponentA)
+
+// 非同期コンポーネントの定義
+const AsyncComponent = defineAsyncComponent({
+  // インポート関数
+  loader: () => import('./AsyncComponent.vue'),
+  // 読み込み中に表示するコンポーネント
+  loadingComponent: LoadingComponent,
+  // 読み込み遅延時間（ms）
+  delay: 200,
+  // エラー時に表示するコンポーネント
+  errorComponent: ErrorComponent,
+  // タイムアウト時間（ms）
+  timeout: 3000
+})
+
+// コンポーネントの切り替え
+const switchComponent = (component) => {
+  currentComponent.value = component
+}
+</script>
+```
+
+### Mixins とコンポーザブル関数
+```javascript
+// mixins（Options API、非推奨）
+export const counterMixin = {
+  data() {
+    return {
+      count: 0
+    }
+  },
+  methods: {
+    increment() {
+      this.count++
+    }
+  }
+}
+
+// コンポーザブル関数（推奨）
+export function useCounter(initialValue = 0) {
+  // ローカルなリアクティブステート
+  const count = ref(initialValue)
+  
+  // 状態を変更する関数
+  const increment = () => {
+    count.value++
+  }
+  
+  const decrement = () => {
+    count.value--
+  }
+  
+  // 複雑なロジック
+  const doubleCount = computed(() => count.value * 2)
+  
+  // 副作用の管理
+  watchEffect(() => {
+    console.log(`カウント: ${count.value}`)
+  })
+  
+  // 必要なものを返す
+  return {
+    count,
+    increment,
+    decrement,
+    doubleCount
+  }
+}
+
+// 使用例
+<script setup>
+import { useCounter } from '@/composables/useCounter'
+
+// 複数のカウンターを独立して使用可能
+const { count: count1, increment: increment1 } = useCounter(10)
+const { count: count2, increment: increment2 } = useCounter(100)
+
+// もちろん単一のインスタンスも可能
+const counter = useCounter()
+</script>
+```
+
+## テスト - 一行ずつ解説
+
+### Vitest による単体テスト
+```javascript
+// sum.js - テスト対象の関数
+export function sum(a, b) {
+  return a + b
+}
+
+// sum.test.js
+// テスト関連の関数をインポート
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+// テスト対象の関数をインポート
+import { sum } from './sum.js'
+
+// テストスイート（関連するテストをグループ化）
+describe('sum function', () => {
+  // 個別のテストケース
+  it('正数の足し算', () => {
+    // 期待値のアサーション
+    expect(sum(1, 2)).toBe(3)
+  })
+  
+  it('負数の足し算', () => {
+    expect(sum(-1, -2)).toBe(-3)
+  })
+  
+  it('ゼロとの足し算', () => {
+    expect(sum(5, 0)).toBe(5)
+  })
+})
+```
+
+### Vue コンポーネントのテスト
+```javascript
+// Button.vue - テスト対象のコンポーネント
+<template>
+  <button @click="handleClick" :disabled="disabled">
+    {{ text }}
+  </button>
+</template>
+
+<script setup>
+const props = defineProps({
+  text: String,
+  disabled: Boolean
+})
+
+const emit = defineEmits(['click'])
+
+const handleClick = () => {
+  emit('click')
+}
+</script>
+
+// Button.test.js
+import { describe, it, expect } from 'vitest'
+// Vue Test Utilsをインポート
+import { mount } from '@vue/test-utils'
+import Button from './Button.vue'
+
+describe('Button.vue', () => {
+  it('テキストプロップが正しく表示される', () => {
+    // コンポーネントをマウント
+    const wrapper = mount(Button, {
+      props: {
+        text: 'Click me'
+      }
+    })
+    // DOMを検証
+    expect(wrapper.text()).toBe('Click me')
+  })
+  
+  it('disabledプロップが機能する', () => {
+    const wrapper = mount(Button, {
+      props: {
+        disabled: true
+      }
+    })
+    // disabled属性が設定されていることを確認
+    expect(wrapper.find('button').element.disabled).toBe(true)
+  })
+  
+  it('クリックイベントを発火する', async () => {
+    const wrapper = mount(Button)
+    // ボタンをクリック
+    await wrapper.find('button').trigger('click')
+    // emitイベントを検証
+    expect(wrapper.emitted()).toHaveProperty('click')
+  })
+})
+```
+
+### E2Eテスト（Cypress例）
+```javascript
+// cypress/integration/login.spec.js
+describe('ログイン機能', () => {
+  // 各テスト前に実行
+  beforeEach(() => {
+    // ログインページにアクセス
+    cy.visit('/login')
+  })
+  
+  it('正しい認証情報でログインできる', () => {
+    // 入力フィールドに値を入力
+    cy.get('#email').type('user@example.com')
+    cy.get('#password').type('password123')
+    
+    // ログインボタンをクリック
+    cy.get('button[type=submit]').click()
+    
+    // ダッシュボードにリダイレクトされることを確認
+    cy.url().should('include', '/dashboard')
+    
+    // 成功メッセージが表示されることを確認
+    cy.get('.success-message').should('be.visible')
+  })
+  
+  it('不正な認証情報でエラーが表示される', () => {
+    cy.get('#email').type('wrong@example.com')
+    cy.get('#password').type('wrongpassword')
+    cy.get('button[type=submit]').click()
+    
+    // エラーメッセージが表示されることを確認
+    cy.get('.error-message').should('contain', '認証に失敗しました')
+  })
+})
+```
+
+## ビルドとデプロイ
+
+### Vite設定の最適化
+```javascript
+// vite.config.js
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import path from 'path'
+
+export default defineConfig({
+  // Vueプラグインを使用
+  plugins: [vue()],
+  
+  // エイリアスの設定
+  resolve: {
+    alias: {
+      // '@' を 'src' ディレクトリにマップ
+      '@': path.resolve(__dirname, './src'),
+      // 'components' エイリアスを追加
+      'components': path.resolve(__dirname, './src/components')
+    }
+  },
+  
+  // 開発サーバーの設定
+  server: {
+    // ポート番号
+    port: 3000,
+    // 自動でブラウザを開く
+    open: true,
+    // プロキシ設定（API呼び出し用）
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  },
+  
+  // ビルド設定
+  build: {
+    // 出力ディレクトリ
+    outDir: 'dist',
+    // ソースマップを生成
+    sourcemap: true,
+    // チャンク分割の設定
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // node_modules内のVueを別チャンクに
+          if (id.includes('node_modules/vue')) {
+            return 'vue'
+          }
+          // その他のnode_modulesをvendorチャンクに
+          if (id.includes('node_modules')) {
+            return 'vendor'
+          }
+        }
+      }
+    }
+  },
+  
+  // 環境変数の設定
+  define: {
+    // グローバル定数を定義
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
+  }
+})
+```
+
+### 環境変数の管理
+```javascript
+// .env.development
+VITE_API_URL=http://localhost:8080/api
+VITE_ENABLE_DEVTOOLS=true
+
+// .env.production
+VITE_API_URL=https://api.example.com
+VITE_ENABLE_DEVTOOLS=false
+
+// 使用例
+<script setup>
+// import.meta.env経由でアクセス
+const apiUrl = import.meta.env.VITE_API_URL
+const isDev = import.meta.env.DEV
+
+// カスタムコンフィグ
+const config = {
+  apiUrl,
+  timeout: 5000,
+  headers: {
+    'X-App-Version': import.meta.env.VITE_APP_VERSION || '1.0.0'
+  }
+}
+</script>
+```
+
+## TypeScript対応
+
+### TypeScript基本設定
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    // ECMAScript のターゲットバージョン
+    "target": "ESNext",
+    // 使用するJavaScriptライブラリ
+    "lib": ["DOM", "ESNext"],
+    // モジュールシステム
+    "module": "ESNext",
+    // モジュール解決方法
+    "moduleResolution": "node",
+    // 厳格な型チェック
+    "strict": true,
+    // JSXの変換方法（Vue用）
+    "jsx": "preserve",
+    // パスマッピング
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    // 型情報ファイル
+    "types": ["vite/client"]
+  },
+  // 含めるファイル
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue"
+  ]
+}
+```
+
+### TypeScript Vueコンポーネント
+```vue
+<template>
+  <div>
+    <h1>{{ user.name }}</h1>
+    <button @click="updateUser">ユーザー更新</button>
+  </div>
+</template>
+
+<script setup lang="ts">
+// 型定義をインポート
+import type { Ref } from 'vue'
+import { ref, computed } from 'vue'
+
+// インターフェースの定義
+interface User {
+  id: number
+  name: string
+  email: string
+  role: 'admin' | 'user' | 'guest'
+}
+
+// レスポンス型の定義
+interface ApiResponse<T> {
+  data: T
+  status: number
+  message: string
+}
+
+// 型付きプロップス定義
+const props = defineProps<{
+  userId: number
+  defaultUser?: User
+}>()
+
+// 型付きエミット定義
+const emit = defineEmits<{
+  (e: 'user-updated', user: User): void
+  (e: 'error', error: Error): void
+}>()
+
+// 型付きリアクティブ変数
+const user: Ref<User | null> = ref(null)
+const isLoading = ref<boolean>(false)
+
+// 算出プロパティに型注釈
+const isAdmin = computed((): boolean => {
+  return user.value?.role === 'admin' ?? false
+})
+
+// 非同期関数に型注釈
+const fetchUser = async (id: number): Promise<void> => {
+  isLoading.value = true
+  try {
+    // ジェネリクスを使用した型安全なAPI呼び出し
+    const response = await fetch(`/api/users/${id}`)
+    const data: ApiResponse<User> = await response.json()
+    
+    if (data.status === 200) {
+      user.value = data.data
+    } else {
+      throw new Error(data.message)
+    }
+  } catch (error) {
+    // 型ガードを使用したエラーハンドリング
+    if (error instanceof Error) {
+      emit('error', error)
+    }
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// 関数の型注釈
+const updateUser = (): void => {
+  if (user.value) {
+    emit('user-updated', user.value)
+  }
+}
+
+// ライフサイクルフックでの型安全な処理
+onMounted(() => {
+  fetchUser(props.userId)
+})
+</script>
+```
+
+## 高度なテクニック
+
+### カスタムフック (Composables)
+```typescript
+// composables/useApi.ts
+import { ref, type Ref } from 'vue'
+
+interface UseApiOptions {
+  immediate?: boolean
+  onSuccess?: (data: any) => void
+  onError?: (error: Error) => void
+}
+
+// 汎用的なAPI呼び出しフック
+export function useApi<T>(
+  url: string, 
+  options: UseApiOptions = {}
+) {
+  const data: Ref<T | null> = ref(null)
+  const loading = ref(false)
+  const error: Ref<Error | null> = ref(null)
+  
+  const execute = async (config: RequestInit = {}) => {
+    loading.value = true
+    error.value = null
+    
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...config.headers
+        },
+        ...config
+      })
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const result = await response.json()
+      data.value = result
+      options.onSuccess?.(result)
+    } catch (err) {
+      error.value = err as Error
+      options.onError?.(err as Error)
+    } finally {
+      loading.value = false
+    }
+  }
+  
+  // 即時実行オプション
+  if (options.immediate ?? true) {
+    execute()
+  }
+  
+  return {
+    data,
+    loading,
+    error,
+    execute,
+    refresh: () => execute()
+  }
+}
+
+// 使用例
+<script setup lang="ts">
+const { data: users, loading, error, refresh } = useApi<User[]>('/api/users', {
+  onSuccess: (data) => console.log('ユーザー読み込み成功', data),
+  onError: (err) => console.error('エラー', err)
+})
+</script>
+```
+
+### パフォーマンス監視
+```javascript
+// composables/usePerformance.ts
+import { onMounted, onUnmounted } from 'vue'
+
+export function usePerformance(componentName: string) {
+  let startTime: number
+  
+  // Performance APIを使用した計測
+  onMounted(() => {
+    startTime = performance.now()
+    
+    // 初期描画時間を記録
+    if (performance.getEntriesByType) {
+      const paintEntries = performance.getEntriesByType('paint')
+      console.log(`${componentName} Paint Timing:`, paintEntries)
+    }
+  })
+  
+  onUnmounted(() => {
+    const duration = performance.now() - startTime
+    console.log(`${componentName} was active for ${duration}ms`)
+    
+    // カスタムメトリクスを送信
+    if (window.analytics) {
+      window.analytics.track('component_lifetime', {
+        name: componentName,
+        duration
+      })
+    }
+  })
+  
+  // メモリ使用量の監視
+  const checkMemory = () => {
+    if (performance.memory) {
+      console.log(`Memory usage:`, {
+        used: (performance.memory.usedJSHeapSize / 1048576).toFixed(2) + 'MB',
+        total: (performance.memory.totalJSHeapSize / 1048576).toFixed(2) + 'MB'
+      })
+    }
+  }
+  
+  return {
+    checkMemory
+  }
+}
+```
+
+### 状態管理の高度パターン
+```typescript
+// stores/useAuthStore.ts
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
+
+export const useAuthStore = defineStore('auth', () => {
+  // 状態
+  const user = ref<User | null>(null)
+  const token = ref<string | null>(null)
+  const refreshToken = ref<string | null>(null)
+  
+  // ゲッター
+  const isAuthenticated = computed(() => !!token.value)
+  const userRole = computed(() => user.value?.role || 'guest')
+  
+  // アクション
+  const login = async (credentials: LoginCredentials) => {
+    try {
+      const response = await api.post('/auth/login', credentials)
+      const { data } = response
+      
+      user.value = data.user
+      token.value = data.token
+      refreshToken.value = data.refreshToken
+      
+      // トークンをローカルストレージに保存
+      localStorage.setItem('auth_token', data.token)
+      localStorage.setItem('refresh_token', data.refreshToken)
+      
+      // Axios のデフォルトヘッダーを設定
+      api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+      
+      return true
+    } catch (error) {
+      console.error('Login failed:', error)
+      return false
+    }
+  }
+  
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout')
+    } finally {
+      user.value = null
+      token.value = null
+      refreshToken.value = null
+      
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('refresh_token')
+      delete api.defaults.headers.common['Authorization']
+    }
+  }
+  
+  // トークンの自動更新
+  const refreshAuthToken = async () => {
+    if (!refreshToken.value) return false
+    
+    try {
+      const response = await api.post('/auth/refresh', {
+        refreshToken: refreshToken.value
+      })
+      
+      token.value = response.data.token
+      localStorage.setItem('auth_token', response.data.token)
+      api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+      
+      return true
+    } catch (error) {
+      logout()
+      return false
+    }
+  }
+  
+  // 初期化時にトークンを復元
+  const initialize = async () => {
+    const savedToken = localStorage.getItem('auth_token')
+    const savedRefreshToken = localStorage.getItem('refresh_token')
+    
+    if (savedToken && savedRefreshToken) {
+      token.value = savedToken
+      refreshToken.value = savedRefreshToken
+      api.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`
+      
+      // ユーザー情報を取得
+      try {
+        const response = await api.get('/auth/me')
+        user.value = response.data
+      } catch (error) {
+        // トークンが無効な場合はログアウト
+        logout()
+      }
+    }
+  }
+  
+  return {
+    user,
+    token,
+    isAuthenticated,
+    userRole,
+    login,
+    logout,
+    refreshAuthToken,
+    initialize
+  }
+})
+```

@@ -1605,3 +1605,1033 @@ export const useAuthStore = defineStore('auth', () => {
   }
 })
 ```
+## フォーム処理とバリデーション - 一行ずつ解説
+
+### 基本的なフォームバリデーション
+```vue
+<template>
+  <!-- フォーム全体のコンテナ -->
+  <form @submit.prevent="handleSubmit" class="form">
+    <!-- 名前入力フィールド -->
+    <div class="form-group">
+      <label for="name">名前:</label>
+      <!-- v-modelで双方向バインディング -->
+      <input 
+        id="name"
+        v-model="form.name"
+        @blur="validateField('name')"
+        :class="{ 'error': errors.name }"
+      >
+      <!-- エラーメッセージの表示 -->
+      <span v-if="errors.name" class="error-message">{{ errors.name }}</span>
+    </div>
+    
+    <!-- メールアドレス入力フィールド -->
+    <div class="form-group">
+      <label for="email">メール:</label>
+      <input 
+        id="email"
+        type="email"
+        v-model="form.email"
+        @blur="validateField('email')"
+        :class="{ 'error': errors.email }"
+      >
+      <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
+    </div>
+    
+    <!-- パスワード入力フィールド -->
+    <div class="form-group">
+      <label for="password">パスワード:</label>
+      <input 
+        id="password"
+        type="password"
+        v-model="form.password"
+        @blur="validateField('password')"
+        :class="{ 'error': errors.password }"
+      >
+      <span v-if="errors.password" class="error-message">{{ errors.password }}</span>
+    </div>
+    
+    <!-- 送信ボタン -->
+    <button 
+      type="submit" 
+      :disabled="!isFormValid || isSubmitting"
+      :class="{ 'loading': isSubmitting }"
+    >
+      {{ isSubmitting ? '送信中...' : '送信' }}
+    </button>
+  </form>
+</template>
+
+<script setup>
+import { ref, reactive, computed } from 'vue'
+
+// フォームの状態管理用のリアクティブオブジェクト
+const form = reactive({
+  name: '',
+  email: '',
+  password: ''
+})
+
+// エラーメッセージ格納用のリアクティブオブジェクト
+const errors = reactive({
+  name: '',
+  email: '',
+  password: ''
+})
+
+// 送信中フラグ
+const isSubmitting = ref(false)
+
+// バリデーションルールを定義
+const validationRules = {
+  name: (value) => {
+    if (!value) return '名前は必須です'
+    if (value.length < 2) return '名前は2文字以上である必要があります'
+    return ''
+  },
+  email: (value) => {
+    if (!value) return 'メールアドレスは必須です'
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(value)) return '有効なメールアドレスを入力してください'
+    return ''
+  },
+  password: (value) => {
+    if (!value) return 'パスワードは必須です'
+    if (value.length < 8) return 'パスワードは8文字以上である必要があります'
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(value)) {
+      return 'パスワードは大文字、小文字、数字を含む必要があります'
+    }
+    return ''
+  }
+}
+
+// 特定フィールドのバリデーション
+const validateField = (fieldName) => {
+  // 対応するバリデーションルールを実行
+  errors[fieldName] = validationRules[fieldName](form[fieldName])
+}
+
+// 全フィールドのバリデーション
+const validateForm = () => {
+  // 各フィールドに対してバリデーションを実行
+  Object.keys(validationRules).forEach(fieldName => {
+    validateField(fieldName)
+  })
+}
+
+// フォーム全体が有効かどうかを判定する算出プロパティ
+const isFormValid = computed(() => {
+  // 全てのフィールドに値があり、エラーがない場合true
+  return Object.keys(form).every(key => form[key]) &&
+         Object.keys(errors).every(key => !errors[key])
+})
+
+// フォーム送信処理
+const handleSubmit = async () => {
+  // 全体バリデーションを実行
+  validateForm()
+  
+  // バリデーションエラーがあれば処理を中断
+  if (!isFormValid.value) return
+  
+  // 送信中フラグを立てる
+  isSubmitting.value = true
+  
+  try {
+    // APIにデータを送信
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(form)
+    })
+    
+    if (!response.ok) {
+      throw new Error('送信に失敗しました')
+    }
+    
+    // 成功時の処理
+    alert('登録が完了しました')
+    // フォームをリセット
+    Object.assign(form, {
+      name: '',
+      email: '',
+      password: ''
+    })
+    // エラーメッセージもクリア
+    Object.assign(errors, {
+      name: '',
+      email: '',
+      password: ''
+    })
+  } catch (error) {
+    // エラー時の処理
+    console.error('送信エラー:', error)
+    alert('送信に失敗しました。再度お試しください。')
+  } finally {
+    // 送信中フラグを下ろす
+    isSubmitting.value = false
+  }
+}
+</script>
+
+<style scoped>
+.form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+input.error {
+  border-color: #dc3545;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875em;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.loading {
+  position: relative;
+}
+</style>
+```
+
+### 高度なフォームバリデーション（VeeValidate使用）
+```vue
+<template>
+  <Form @submit="onSubmit" :validation-schema="schema">
+    <!-- 自動でエラーメッセージを表示するField -->
+    <div class="form-group">
+      <label for="email">メールアドレス</label>
+      <Field 
+        name="email" 
+        type="email" 
+        id="email"
+        v-slot="{ field, errors }"
+      >
+        <input v-bind="field" :class="{ 'error': errors.length }">
+        <span v-if="errors.length" class="error-message">{{ errors[0] }}</span>
+      </Field>
+    </div>
+    
+    <!-- カスタムバリデーションメッセージ -->
+    <div class="form-group">
+      <label for="password">パスワード</label>
+      <Field name="password" type="password" rules="required|min:8" />
+      <ErrorMessage name="password" class="error-message" />
+    </div>
+    
+    <!-- 非同期バリデーション -->
+    <div class="form-group">
+      <label for="username">ユーザー名</label>
+      <Field 
+        name="username" 
+        :rules="validateUsername"
+        v-slot="{ field, meta }"
+      >
+        <input v-bind="field">
+        <span v-if="meta.pending">確認中...</span>
+        <span v-else-if="meta.error" class="error-message">{{ meta.error }}</span>
+        <span v-else-if="meta.valid" class="success-message">✓ 利用可能</span>
+      </Field>
+    </div>
+    
+    <button type="submit">送信</button>
+  </Form>
+</template>
+
+<script setup>
+import { Form, Field, ErrorMessage } from 'vee-validate'
+import * as yup from 'yup'
+
+// Yupを使用したスキーマ定義
+const schema = yup.object({
+  email: yup
+    .string()
+    .required('メールアドレスは必須です')
+    .email('有効なメールアドレスを入力してください'),
+  password: yup
+    .string()
+    .required('パスワードは必須です')
+    .min(8, 'パスワードは8文字以上である必要があります')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      'パスワードは大文字、小文字、数字を含む必要があります'
+    )
+})
+
+// 非同期バリデーション関数
+const validateUsername = async (value) => {
+  if (!value) return '必須項目です'
+  
+  // APIでユーザー名の重複チェック
+  try {
+    const response = await fetch(`/api/check-username?username=${value}`)
+    const { available } = await response.json()
+    
+    if (!available) {
+      return 'このユーザー名は既に使用されています'
+    }
+    return true
+  } catch (error) {
+    return 'チェックに失敗しました'
+  }
+}
+
+// フォーム送信処理
+const onSubmit = async (values) => {
+  try {
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(values)
+    })
+    
+    if (response.ok) {
+      // 成功処理
+      alert('登録が完了しました')
+    }
+  } catch (error) {
+    console.error('送信エラー:', error)
+  }
+}
+</script>
+```
+
+## 国際化（i18n） - 一行ずつ解説
+
+### Vue I18nの設定
+```javascript
+// i18n/index.js
+// Vue I18nをインポート
+import { createI18n } from 'vue-i18n'
+
+// 言語ファイルをインポート
+import ja from './locales/ja.json'
+import en from './locales/en.json'
+
+// 言語データの定義
+const messages = {
+  ja,
+  en
+}
+
+// ブラウザの言語を取得する関数
+const getDefaultLanguage = () => {
+  // ブラウザの言語設定から最初の言語を取得
+  const browserLanguage = navigator.language || navigator.languages[0]
+  
+  // 'ja-JP' → 'ja' のように言語コードのみを抽出
+  const languageCode = browserLanguage.split('-')[0]
+  
+  // 対応している言語があればその言語を、なければ英語をデフォルトとする
+  return Object.keys(messages).includes(languageCode) ? languageCode : 'en'
+}
+
+// i18nインスタンスを作成
+const i18n = createI18n({
+  // レガシーAPIを無効化（Composition API用）
+  legacy: false,
+  // デフォルト言語
+  locale: getDefaultLanguage(),
+  // 翻訳が見つからない場合のフォールバック言語
+  fallbackLocale: 'en',
+  // 翻訳データ
+  messages,
+  // 日付・数値フォーマットの設定
+  datetimeFormats: {
+    ja: {
+      short: {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      },
+      long: {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long',
+        hour: 'numeric',
+        minute: 'numeric'
+      }
+    },
+    en: {
+      short: {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      },
+      long: {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long',
+        hour: 'numeric',
+        minute: 'numeric'
+      }
+    }
+  },
+  // 数値フォーマットの設定
+  numberFormats: {
+    ja: {
+      currency: {
+        style: 'currency',
+        currency: 'JPY'
+      },
+      decimal: {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    },
+    en: {
+      currency: {
+        style: 'currency',
+        currency: 'USD'
+      },
+      decimal: {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }
+    }
+  }
+})
+
+export default i18n
+```
+
+### 翻訳ファイルの管理
+```json
+// i18n/locales/ja.json
+{
+  "message": {
+    "hello": "こんにちは",
+    "welcome": "ようこそ",
+    "goodbye": "さようなら"
+  },
+  "nav": {
+    "home": "ホーム",
+    "about": "概要",
+    "contact": "お問い合わせ"
+  },
+  "form": {
+    "submit": "送信",
+    "cancel": "キャンセル",
+    "required": "必須項目です",
+    "email": {
+      "label": "メールアドレス",
+      "placeholder": "メールアドレスを入力",
+      "invalid": "有効なメールアドレスを入力してください"
+    }
+  },
+  "error": {
+    "network": "ネットワークエラーが発生しました",
+    "notFound": "ページが見つかりません",
+    "serverError": "サーバーエラーが発生しました"
+  },
+  "validation": {
+    "min": "最小{min}文字必要です",
+    "max": "最大{max}文字までです"
+  }
+}
+
+// i18n/locales/en.json
+{
+  "message": {
+    "hello": "Hello",
+    "welcome": "Welcome",
+    "goodbye": "Goodbye"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "form": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "required": "This field is required",
+    "email": {
+      "label": "Email",
+      "placeholder": "Enter your email",
+      "invalid": "Please enter a valid email address"
+    }
+  },
+  "error": {
+    "network": "Network error occurred",
+    "notFound": "Page not found",
+    "serverError": "Server error occurred"
+  },
+  "validation": {
+    "min": "Minimum {min} characters required",
+    "max": "Maximum {max} characters allowed"
+  }
+}
+```
+
+### i18nの使用例
+```vue
+<template>
+  <div class="app">
+    <!-- 基本的な翻訳 -->
+    <h1>{{ $t('message.welcome') }}</h1>
+    
+    <!-- パラメータ付き翻訳 -->
+    <p>{{ $t('validation.min', { min: 8 }) }}</p>
+    
+    <!-- 複数形対応 -->
+    <p>{{ $tc('item', itemCount, { count: itemCount }) }}</p>
+    
+    <!-- 日付フォーマット -->
+    <p>{{ $d(new Date(), 'long') }}</p>
+    
+    <!-- 数値フォーマット -->
+    <p>{{ $n(price, 'currency') }}</p>
+    
+    <!-- コンポーネント内での翻訳 -->
+    <button @click="changeLanguage">
+      {{ currentLanguage === 'ja' ? 'English' : '日本語' }}
+    </button>
+    
+    <!-- 動的な翻訳 -->
+    <div v-for="error in errors" :key="error.code">
+      {{ $t(`error.${error.code}`) }}
+    </div>
+    
+    <!-- HTMLを含む翻訳 -->
+    <div v-html="$t('message.richText')"></div>
+  </div>
+</template>
+
+<script setup>
+import { useI18n } from 'vue-i18n'
+import { ref, computed } from 'vue'
+
+// useI18nコンポーザブルを使用
+const { t, d, n, locale } = useI18n()
+
+// 現在の言語を算出プロパティとして取得
+const currentLanguage = computed(() => locale.value)
+
+// データの定義
+const price = ref(1234.56)
+const itemCount = ref(1)
+const errors = ref([
+  { code: 'network' },
+  { code: 'serverError' }
+])
+
+// 言語切り替え関数
+const changeLanguage = () => {
+  // 現在の言語に応じて切り替え
+  locale.value = locale.value === 'ja' ? 'en' : 'ja'
+  
+  // ローカルストレージに保存
+  localStorage.setItem('userLanguage', locale.value)
+}
+
+// ローカルストレージから言語設定を復元
+onMounted(() => {
+  const savedLanguage = localStorage.getItem('userLanguage')
+  if (savedLanguage && ['ja', 'en'].includes(savedLanguage)) {
+    locale.value = savedLanguage
+  }
+})
+
+// プログラマティックな翻訳
+const getValidationMessage = (rule, params) => {
+  // tメソッドを直接使用
+  return t(`validation.${rule}`, params)
+}
+
+// 言語に応じた画像の切り替え
+const getLocalizedImage = (imageName) => {
+  return `/images/${locale.value}/${imageName}`
+}
+</script>
+```
+
+### 動的インポートとコード分割
+```javascript
+// i18n/index.js (改良版)
+import { createI18n } from 'vue-i18n'
+
+// 動的インポート用の関数
+const loadLocaleMessages = async (locale) => {
+  // 動的にロケールファイルをインポート
+  const messages = await import(`./locales/${locale}.json`)
+  return messages.default
+}
+
+// 初期の空メッセージ
+const messages = {}
+
+const i18n = createI18n({
+  legacy: false,
+  locale: 'ja',
+  fallbackLocale: 'en',
+  messages
+})
+
+// 非同期で言語ファイルを読み込む関数
+export const loadLanguage = async (lang) => {
+  // 既に読み込み済みの場合はスキップ
+  if (i18n.global.availableLocales.includes(lang)) {
+    return
+  }
+  
+  try {
+    // 言語ファイルを非同期読み込み
+    const messages = await loadLocaleMessages(lang)
+    
+    // メッセージを追加
+    i18n.global.setLocaleMessage(lang, messages)
+    
+    // 言語を切り替え
+    i18n.global.locale.value = lang
+    
+    // HTMLのlang属性も更新
+    document.querySelector('html').setAttribute('lang', lang)
+  } catch (error) {
+    console.error(`Failed to load language ${lang}:`, error)
+  }
+}
+
+// ページ読み込み時に初期言語を設定
+const setupI18n = async () => {
+  const defaultLanguage = localStorage.getItem('userLanguage') || 'ja'
+  await loadLanguage(defaultLanguage)
+}
+
+// アプリ起動時に実行
+setupI18n()
+
+export default i18n
+```
+
+## SEO対策とSSR（Server-Side Rendering）
+
+### Nuxt.js での SEO 対策
+```vue
+<template>
+  <div>
+    <h1>{{ article.title }}</h1>
+    <p>{{ article.content }}</p>
+  </div>
+</template>
+
+<script setup>
+// Nuxt.jsのSEO関連コンポーザブル
+import { useSeoMeta, useHead } from '#imports'
+
+// プロップスからデータを受け取る
+const props = defineProps({
+  article: {
+    type: Object,
+    required: true
+  }
+})
+
+// SEOメタタグの設定
+useSeoMeta({
+  // ページタイトル
+  title: () => props.article.title,
+  // ページ説明文
+  description: () => props.article.excerpt,
+  // OGP設定
+  ogTitle: () => props.article.title,
+  ogDescription: () => props.article.excerpt,
+  ogImage: () => props.article.imageUrl,
+  ogUrl: () => `https://example.com/articles/${props.article.slug}`,
+  ogType: 'article',
+  // Twitter Cards
+  twitterCard: 'summary_large_image',
+  twitterSite: '@yoursite',
+  twitterCreator: () => props.article.author.twitter
+})
+
+// 構造化データの追加
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: props.article.title,
+        description: props.article.excerpt,
+        image: props.article.imageUrl,
+        datePublished: props.article.publishedAt,
+        dateModified: props.article.updatedAt,
+        author: {
+          '@type': 'Person',
+          name: props.article.author.name
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Your Company',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://example.com/logo.png'
+          }
+        }
+      })
+    }
+  ]
+})
+
+// クリティカルCSSの設定
+useHead({
+  style: [{
+    children: `
+      .article-header {
+        padding: 2rem 0;
+        background: #f8f9fa;
+      }
+      .article-title {
+        font-size: 2.5rem;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+      }
+    `,
+    // クリティカルCSSとしてマーク
+    key: 'critical-css',
+    ssr: true
+  }]
+})
+</script>
+```
+
+### 静的サイト生成（Vitepress例）
+```javascript
+// .vitepress/config.js
+export default {
+  // サイトの基本情報
+  title: 'My Documentation',
+  description: 'A VitePress site',
+  
+  // SEO設定
+  head: [
+    ['meta', { name: 'theme-color', content: '#3eaf7c' }],
+    ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
+    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
+    // Open Graph
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:locale', content: 'ja_JP' }],
+    ['meta', { property: 'og:site_name', content: 'My Documentation' }],
+    // Google Analytics
+    ['script', {
+      async: true,
+      src: 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID'
+    }],
+    ['script', {}, `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'GA_MEASUREMENT_ID');
+    `]
+  ],
+  
+  // テーマ設定
+  themeConfig: {
+    nav: [
+      { text: 'Home', link: '/' },
+      { text: 'Guide', link: '/guide/' },
+      { text: 'Config', link: '/config/' }
+    ],
+    
+    sidebar: {
+      '/guide/': [
+        {
+          text: 'Guide',
+          items: [
+            { text: 'Introduction', link: '/guide/' },
+            { text: 'Getting Started', link: '/guide/getting-started' },
+            { text: 'Configuration', link: '/guide/configuration' }
+          ]
+        }
+      ]
+    },
+    
+    // 編集リンク
+    editLink: {
+      pattern: 'https://github.com/user/repo/edit/main/docs/:path',
+      text: 'Edit this page on GitHub'
+    },
+    
+    // 検索機能
+    algolia: {
+      appId: 'YOUR_APP_ID',
+      apiKey: 'YOUR_API_KEY',
+      indexName: 'YOUR_INDEX_NAME'
+    }
+  },
+  
+  // ビルド設定
+  build: {
+    // SSGの出力ディレクトリ
+    outDir: '../dist',
+    // サイトマップ生成
+    siteMap: {
+      hostname: 'https://example.com'
+    }
+  },
+  
+  // プラグイン
+  plugins: {
+    // PWA対応
+    pwa: {
+      manifest: {
+        name: 'My Documentation',
+        short_name: 'MyDocs',
+        theme_color: '#3eaf7c',
+        background_color: '#ffffff',
+        display: 'standalone',
+        start_url: '/'
+      }
+    }
+  }
+}
+```
+
+## セキュリティ対策
+
+### XSS対策
+```vue
+<template>
+  <!-- 安全な方法でHTMLをレンダリング -->
+  <div v-html="sanitizedHtml"></div>
+  
+  <!-- ユーザー入力は必ずエスケープ -->
+  <p>{{ userInput }}</p>
+  
+  <!-- サニタイズされた属性バインディング -->
+  <a :href="sanitizeUrl(userLink)">リンク</a>
+  
+  <!-- 安全なJavaScript実行 -->
+  <button @click="secureClickHandler">クリック</button>
+</template>
+
+<script setup>
+import DOMPurify from 'dompurify'
+import { ref, computed } from 'vue'
+
+// HTMLサニタイズ用の設定
+const sanitizeOptions = {
+  ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li'],
+  ALLOWED_ATTR: ['class', 'id'],
+  FORBID_SCRIPTS: true,
+  FORBID_TAGS: ['style', 'script', 'iframe'],
+  FORBID_ATTR: ['style', 'onerror', 'onload']
+}
+
+const props = defineProps({
+  content: String,
+  userInput: String,
+  userLink: String
+})
+
+// HTMLをサニタイズ
+const sanitizedHtml = computed(() => {
+  if (!props.content) return ''
+  return DOMPurify.sanitize(props.content, sanitizeOptions)
+})
+
+// URLのバリデーション
+const sanitizeUrl = (url) => {
+  if (!url) return '#'
+  
+  try {
+    const urlObj = new URL(url)
+    // 許可されたプロトコルのみ
+    if (!['http:', 'https:', 'mailto:'].includes(urlObj.protocol)) {
+      return '#'
+    }
+    return url
+  } catch {
+    // 無効なURLの場合
+    return '#'
+  }
+}
+
+// 安全なイベントハンドラー
+const secureClickHandler = (event) => {
+  // イベントの伝播を防ぐ
+  event.preventDefault()
+  event.stopPropagation()
+  
+  // 安全な処理のみ実行
+  console.log('安全に処理されました')
+}
+
+// コンテンツセキュリティポリシー(CSP)の設定
+const setCspHeader = () => {
+  const meta = document.createElement('meta')
+  meta.httpEquiv = 'Content-Security-Policy'
+  meta.content = `
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com;
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: https:;
+    connect-src 'self' https://api.example.com;
+    font-src 'self' https://fonts.gstatic.com;
+    object-src 'none';
+    media-src 'self';
+    frame-src 'none';
+  `.replace(/\s+/g, ' ').trim()
+  
+  document.head.appendChild(meta)
+}
+
+// コンポーネントマウント時にCSPを設定
+onMounted(() => {
+  setCspHeader()
+})
+</script>
+```
+
+### CSRF対策
+```javascript
+// utils/csrf.js
+// CSRFトークンの管理
+
+// CSRFトークンをcookieから取得
+export const getCSRFToken = () => {
+  const cookies = document.cookie.split(';')
+  const csrfCookie = cookies.find(cookie => 
+    cookie.trim().startsWith('csrf_token=')
+  )
+  
+  if (csrfCookie) {
+    return csrfCookie.split('=')[1]
+  }
+  
+  return null
+}
+
+// HTTPリクエストヘッダーにCSRFトークンを追加
+export const addCSRFHeaders = (headers = {}) => {
+  const token = getCSRFToken()
+  
+  if (token) {
+    headers['X-CSRF-Token'] = token
+  }
+  
+  return headers
+}
+
+// Axios インターセプターでCSRFトークンを自動付与
+import axios from 'axios'
+
+const api = axios.create({
+  baseURL: '/api',
+  withCredentials: true
+})
+
+// リクエストインターセプター
+api.interceptors.request.use(
+  (config) => {
+    // GETリクエスト以外にCSRFトークンを追加
+    if (!['get', 'head', 'options'].includes(config.method.toLowerCase())) {
+      const token = getCSRFToken()
+      if (token) {
+        config.headers['X-CSRF-Token'] = token
+      }
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+export default api
+```
+
+### 認証とアクセス制御
+```vue
+<!-- components/PrivateRoute.vue -->
+<template>
+  <!-- 認証済みの場合のみコンテンツを表示 -->
+  <template v-if="isAuthenticated">
+    <slot />
+  </template>
+  <!-- 未認証の場合のリダイレクト -->
+  <template v-else-if="!loading">
+    <div class="unauthorized">
+      <h2>アクセス権限がありません</h2>
+      <button @click="redirectToLogin">ログインページへ</button>
+    </div>
+  </template>
+  <!-- 認証チェック中の表示 -->
+  <div v-else class="loading">
+    認証を確認中...
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const props = defineProps({
+  // 必要な権限レベル
+  requiredRoles: {
+    type: Array,
+    default: () => []
+  }
+})
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+// 認証状態の管理
+const loading = ref(true)
+const isAuthenticated = computed(() => {
+  if (!authStore.isAuthenticated) return false
+  
+  // 必要な権限チェック
+  if (props.requiredRoles.length > 0) {
+    return props.requiredRoles.includes(authStore.userRole)
+  }
+  
+  return true
+})
+
+// ログインページへのリダイレクト
+const redirectToLogin = () => {
+  router.push({
+    name: 'Login',
+    query: { redirect: router.currentRoute.value.path }
+  })
+}
+
+// 認証チェック
+const checkAuth = async () => {
+  try {
+    await authStore.initialize()
+  } catch (error) {
+    console.error('認証チェックエラー:', error)
+    authStore.logout()
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(checkAuth)
+</script>
+```

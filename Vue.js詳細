@@ -1,0 +1,652 @@
+# Vue.js & JavaScript チートシート - VSCode開発者向け（詳細解説版）
+
+## Vue.js 基本構文 - 一行ずつ解説
+
+### コンポーネント定義（Options API）
+```vue
+<template>
+  <!-- テンプレートセクション：HTMLを記述する -->
+  <div>
+    <!-- {{ }} は変数の値を表示する構文（マスタッシュ記法） -->
+    <h1>{{ title }}</h1>
+    <!-- @click はv-on:clickの省略記法、クリックイベントハンドラーを設定 -->
+    <button @click="handleClick">クリック</button>
+  </div>
+</template>
+
+<script>
+// ESモジュールの標準的なエクスポート構文
+export default {
+  // コンポーネント名を指定（デバッグ時に便利）
+  name: 'ComponentName',
+  // リアクティブなデータを定義する関数
+  data() {
+    // 新しいインスタンスごとに新しいデータオブジェクトを返す
+    return {
+      // title変数に初期値を設定
+      title: 'Hello Vue'
+    }
+  },
+  // イベントハンドラーやカスタムメソッドを定義
+  methods: {
+    // this経由でdataにアクセス可能
+    handleClick() {
+      // コンソールにログを出力
+      console.log('clicked')
+    }
+  }
+}
+</script>
+
+<style scoped>
+/* scopedを指定すると、このコンポーネント内のみに適用される */
+/* グローバルスタイルに影響を与えない */
+</style>
+```
+
+### コンポーネント定義（Composition API）
+```vue
+<template>
+  <div>
+    <!-- Composition APIでも同じテンプレート構文 -->
+    <h1>{{ title }}</h1>
+    <button @click="handleClick">クリック</button>
+  </div>
+</template>
+
+<script setup>
+// refをインポート（リアクティブな値を作成） 
+import { ref } from 'vue'
+
+// ref()でリアクティブな変数を作成（.valueでアクセス）
+const title = ref('Hello Vue')
+
+// 通常の関数として定義（setupコンテキスト内で自動的に公開）
+const handleClick = () => {
+  console.log('clicked')
+}
+</script>
+```
+
+### データバインディング
+```vue
+<template>
+  <!-- テキスト補間：変数の値をそのまま表示 -->
+  <p>{{ message }}</p>
+  
+  <!-- v-bind:srcの省略記法（:src） -->
+  <!-- 属性に変数値をバインド -->
+  <img :src="imageUrl" :alt="altText">
+  
+  <!-- クラスバインディング：条件に応じてクラスを適用 -->
+  <!-- isActiveがtrueの時'active'クラスを適用 -->
+  <div :class="{ active: isActive, 'text-danger': hasError }"></div>
+  
+  <!-- インラインスタイルバインディング -->
+  <!-- JavaScriptオブジェクトでスタイルを指定 -->
+  <div :style="{ color: textColor, fontSize: fontSize + 'px' }"></div>
+  
+  <!-- v-model：双方向データバインディング -->
+  <!-- input値の変更が自動的に変数に反映される -->
+  <input v-model="message">
+</template>
+```
+
+### 条件付きレンダリング
+```vue
+<template>
+  <!-- v-if：条件が真の時のみ要素を描画（DOM操作あり） -->
+  <div v-if="isVisible">表示</div>
+  
+  <!-- v-else-if：前のv-ifが偽の時に次の条件をチェック -->
+  <div v-else-if="isLoading">読み込み中</div>
+  
+  <!-- v-else：すべての条件が偽の時に表示 -->
+  <div v-else>非表示</div>
+  
+  <!-- v-show：DOMには残るが、display:noneで表示/非表示 -->
+  <!-- 切り替えが頻繁な場合はv-showが有利 -->
+  <div v-show="showContent">コンテンツ</div>
+</template>
+```
+
+### リストレンダリング
+```vue
+<template>
+  <ul>
+    <!-- v-for：配列の各要素に対してリピート -->
+    <!-- :key は一意の識別子（パフォーマンス最適化に必要） -->
+    <li v-for="item in items" :key="item.id">
+      {{ item.name }}
+    </li>
+  </ul>
+  
+  <!-- インデックスも取得する場合 -->
+  <!-- (item, index)の順序で取得 -->
+  <div v-for="(item, index) in items" :key="index">
+    {{ index }}: {{ item }}
+  </div>
+</template>
+```
+
+### イベントハンドリング
+```vue
+<template>
+  <!-- v-on:clickの省略記法（@click） -->
+  <button @click="onClick">クリック</button>
+  
+  <!-- メソッドに引数を渡す -->
+  <button @click="onSubmit('data')">送信</button>
+  
+  <!-- イベント修飾子：preventDefault()を自動実行 -->
+  <form @submit.prevent="onSubmit"></form>
+  
+  <!-- イベントのバブリングを停止 -->
+  <div @click.stop="onClick"></div>
+  
+  <!-- 特定のキーに反応（Enterキー） -->
+  <input @keyup.enter="onEnter">
+  
+  <!-- 1回のみ実行されるイベント -->
+  <button @click.once="onOnceClick">1回だけ</button>
+</template>
+```
+
+### コンポーネント間通信
+```vue
+<!-- 親コンポーネント -->
+<template>
+  <!-- 子コンポーネントにpropsとして値を渡す -->
+  <!-- @child-eventで子からのカスタムイベントを受信 -->
+  <ChildComponent 
+    :message="parentMessage"
+    @child-event="handleChildEvent"
+  />
+</template>
+
+<script setup>
+// 子コンポーネントをインポート
+import ChildComponent from './ChildComponent.vue'
+
+// 子からのイベントをハンドリングする関数
+const handleChildEvent = (data) => {
+  console.log(data)
+}
+</script>
+
+<!-- 子コンポーネント -->
+<script setup>
+// props定義：親からのデータを受け取る
+const props = defineProps({
+  message: String  // messageはString型
+})
+
+// emit定義：親に送信できるイベントを宣言
+const emit = defineEmits(['child-event'])
+
+// 親にデータを送信する関数
+const sendData = () => {
+  // 第1引数：イベント名、第2引数：送信データ
+  emit('child-event', 'データ')
+}
+</script>
+```
+
+## JavaScript 基本構文 - 一行ずつ解説
+
+### 変数宣言
+```javascript
+// const：再代入不可の定数宣言（ES6+）
+const name = '田中'
+// オブジェクトや配列自体は変更可能
+const numbers = [1, 2, 3]
+
+// let：再代入可能な変数宣言（ES6+）
+let count = 0
+// 新しい値を代入
+count = 1
+
+// var：関数スコープの変数（古い方式、避けるべき）
+var oldStyle = 'avoid'
+```
+
+### 関数
+```javascript
+// 関数宣言：巻き上げが発生する
+function greet(name) {
+  // テンプレートリテラルで文字列結合
+  return `Hello ${name}`
+}
+
+// 関数式：変数に関数を代入
+const greet = function(name) {
+  return `Hello ${name}`
+}
+
+// アロー関数：より簡潔な構文（ES6+）
+const greet = (name) => {
+  return `Hello ${name}`
+}
+
+// 単一式の場合はreturnを省略可能
+const greet = name => `Hello ${name}`
+
+// デフォルト引数：引数が渡されない場合の初期値
+const greet = (name = 'Guest') => `Hello ${name}`
+```
+
+### オブジェクト
+```javascript
+// オブジェクトリテラル記法
+const user = {
+  // プロパティの定義
+  name: '田中',
+  age: 30,
+  // メソッドの簡潔な記法（ES6+）
+  greet() {
+    // thisはそのオブジェクト自身を参照
+    return `Hello ${this.name}`
+  }
+}
+
+// 分割代入：オブジェクトから複数の値を取り出す
+const { name, age } = user
+
+// スプレッド演算子：既存オブジェクトに新しいプロパティを追加
+const newUser = { ...user, email: 'tanaka@example.com' }
+
+// 動的プロパティ：変数値をプロパティ名として使用
+const key = 'name'
+const obj = {
+  [key]: '値'  // このオブジェクトは{name: '値'}になる
+}
+```
+
+### 配列
+```javascript
+// 配列リテラル記法
+const numbers = [1, 2, 3, 4, 5]
+
+// map：各要素を変換した新しい配列を生成
+const doubled = numbers.map(n => n * 2)  // [2, 4, 6, 8, 10]
+
+// filter：条件に合致する要素だけを抽出
+const evens = numbers.filter(n => n % 2 === 0)  // [2, 4]
+
+// reduce：配列を単一の値に集約
+// accは累積値、nは現在の要素、0は初期値
+const sum = numbers.reduce((acc, n) => acc + n, 0)  // 15
+
+// find：条件に合う最初の要素を取得
+const found = numbers.find(n => n > 3)  // 4
+
+// forEach：各要素に対して処理を実行（副作用用）
+numbers.forEach(n => console.log(n))
+
+// 分割代入：最初の要素、2番目の要素、残り要素
+const [first, second, ...rest] = numbers
+
+// スプレッド演算子：配列の結合
+const combined = [...numbers, 6, 7, 8]
+```
+
+### 非同期処理
+```javascript
+// Promise：非同期処理の結果を扱う
+const fetchData = () => {
+  // Promiseコンストラクタは実行関数を受け取る
+  return new Promise((resolve, reject) => {
+    // 非同期処理のシミュレーション
+    setTimeout(() => {
+      // 成功時はresolveを呼ぶ
+      resolve('データ')
+    }, 1000)
+  })
+}
+
+// async/await：非同期処理の同期的記述
+const getData = async () => {
+  try {
+    // awaitでPromiseの解決を待つ
+    const data = await fetchData()
+    console.log(data)
+  } catch (error) {
+    // エラーが発生した場合の処理
+    console.error(error)
+  }
+}
+
+// fetch API：HTTP通信を行う
+const fetchUser = async () => {
+  // fetch関数は自動的にPromiseを返す
+  const response = await fetch('/api/user')
+  // レスポンスのJSONを解析
+  const data = await response.json()
+  return data
+}
+```
+
+### クラス
+```javascript
+// ES6のクラス構文
+class Person {
+  // コンストラクタ：インスタンス作成時に実行
+  constructor(name, age) {
+    // インスタンスプロパティの設定
+    this.name = name
+    this.age = age
+  }
+  
+  // インスタンスメソッド
+  greet() {
+    return `Hello, I'm ${this.name}`
+  }
+  
+  // 静的メソッド：クラス自体に紐付く
+  static compare(person1, person2) {
+    return person1.age - person2.age
+  }
+}
+
+// 継承：extendsで親クラスから拡張
+class Student extends Person {
+  constructor(name, age, school) {
+    // super()で親のコンストラクタを呼び出す
+    super(name, age)
+    // 子クラス独自のプロパティ
+    this.school = school
+  }
+  
+  // 新しいメソッドの追加
+  study() {
+    return `${this.name} is studying at ${this.school}`
+  }
+}
+```
+
+### モジュール
+```javascript
+// エクスポート：値や関数をモジュール外に公開
+// 名前付きエクスポート
+export const name = '田中'
+export function greet() {
+  return 'Hello'
+}
+
+// デフォルトエクスポート：1つのモジュールに1つまで
+export default class User {
+  // クラス定義
+}
+
+// インポート：他のモジュールから読み込み
+// デフォルトエクスポートと名前付きエクスポート
+import User, { name, greet } from './user'
+// ワイルドカードインポート
+import * as userModule from './user'
+// エイリアス付きインポート
+import { name as userName } from './user'
+```
+
+## 実用例 - 一行ずつ解説
+
+### ユーザーリストコンポーネント
+```vue
+<template>
+  <!-- ユーザーリスト全体のコンテナ -->
+  <div class="user-list">
+    <!-- 検索用入力フィールド、双方向バインディング -->
+    <input v-model="searchQuery" placeholder="検索...">
+    
+    <!-- 読み込み中の表示（v-ifで条件分岐） -->
+    <div v-if="loading">読み込み中...</div>
+    <!-- エラー時の表示 -->
+    <div v-else-if="error">エラー: {{ error }}</div>
+    <!-- 通常時のユーザーリスト表示 -->
+    <div v-else>
+      <!-- フィルタリングされたユーザーをループ表示 -->
+      <div v-for="user in filteredUsers" :key="user.id" class="user-item">
+        <!-- ユーザーのアバター画像 -->
+        <img :src="user.avatar" :alt="user.name">
+        <!-- ユーザー情報のコンテナ -->
+        <div>
+          <!-- ユーザー名 -->
+          <h3>{{ user.name }}</h3>
+          <!-- メールアドレス -->
+          <p>{{ user.email }}</p>
+        </div>
+        <!-- 削除ボタン、クリックでdeleteUser実行 -->
+        <button @click="deleteUser(user.id)">削除</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+// Vue.jsのリアクティブAPIをインポート
+import { ref, computed, onMounted } from 'vue'
+
+// ユーザーデータを格納する配列（初期値は空配列）
+const users = ref([])
+// 検索クエリ文字列（初期値は空文字）
+const searchQuery = ref('')
+// 読み込み状態フラグ（初期値はfalse）
+const loading = ref(false)
+// エラーメッセージ（初期値はnull）
+const error = ref(null)
+
+// 算出プロパティ：検索結果のフィルタリング
+const filteredUsers = computed(() => {
+  // 検索クエリが空なら全ユーザーを返す
+  if (!searchQuery.value) return users.value
+  // 検索クエリに部分一致するユーザーのみを返す
+  return users.value.filter(user => 
+    user.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+})
+
+// ユーザーデータ取得の非同期関数
+const fetchUsers = async () => {
+  // 読み込み開始時の状態設定
+  loading.value = true
+  error.value = null
+  try {
+    // APIからデータ取得
+    const response = await fetch('/api/users')
+    // レスポンスをJSONに変換してusersに格納
+    users.value = await response.json()
+  } catch (err) {
+    // エラー発生時はエラーメッセージを設定
+    error.value = err.message
+  } finally {
+    // 処理完了時（成功・失敗問わず）読み込み終了
+    loading.value = false
+  }
+}
+
+// ユーザー削除の非同期関数
+const deleteUser = async (id) => {
+  try {
+    // DELETEリクエストでユーザー削除
+    await fetch(`/api/users/${id}`, { method: 'DELETE' })
+    // ローカルのユーザーリストからも削除
+    users.value = users.value.filter(user => user.id !== id)
+  } catch (err) {
+    // エラー発生時はコンソールに出力
+    console.error('削除エラー:', err)
+  }
+}
+
+// コンポーネントマウント時にユーザーデータを取得
+onMounted(fetchUsers)
+</script>
+
+<style scoped>
+/* ユーザーリスト全体のスタイル */
+.user-list {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 各ユーザーアイテムのスタイル */
+.user-item {
+  display: flex;        /* フレックスレイアウト */
+  align-items: center;  /* 垂直中央揃え */
+  gap: 1rem;           /* 子要素間のスペース */
+  padding: 1rem;
+  border: 1px solid #ddd;
+  margin-bottom: 0.5rem;
+}
+
+/* ユーザーアバター画像のスタイル */
+.user-item img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;   /* 円形に切り抜き */
+}
+</style>
+```
+
+### 状態管理（Pinia）
+```javascript
+// stores/user.js
+// PiniaのdefineStoreをインポート
+import { defineStore } from 'pinia'
+
+// ユーザー用のストアを定義
+export const useUserStore = defineStore('user', {
+  // 状態の初期化（Vuexのstateに相当）
+  state: () => ({
+    // 現在のユーザー情報（初期値はnull）
+    user: null,
+    // 認証状態フラグ（初期値はfalse）
+    isAuthenticated: false
+  }),
+  
+  // ゲッター：状態から派生する値（Vuexのgettersに相当）
+  getters: {
+    // ユーザー名の取得（未ログイン時はGuest）
+    username: (state) => state.user?.name || 'Guest',
+    // 管理者権限チェック
+    isAdmin: (state) => state.user?.role === 'admin'
+  },
+  
+  // アクション：状態を変更する非同期/同期処理（Vuexのmutations+actionsに相当）
+  actions: {
+    // ログイン処理の非同期関数
+    async login(credentials) {
+      try {
+        // APIにログイン情報を送信
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(credentials)
+        })
+        
+        // レスポンスが成功の場合
+        if (response.ok) {
+          // ユーザー情報を取得して状態に保存
+          this.user = await response.json()
+          // 認証フラグをtrueに設定
+          this.isAuthenticated = true
+          // 成功フラグを返す
+          return true
+        }
+        // 失敗時はfalseを返す
+        return false
+      } catch (error) {
+        // エラー発生時はコンソールに出力
+        console.error('ログインエラー:', error)
+        return false
+      }
+    },
+    
+    // ログアウト処理
+    logout() {
+      // ユーザー情報をリセット
+      this.user = null
+      // 認証フラグをfalseに設定
+      this.isAuthenticated = false
+    }
+  }
+})
+
+// 使用例
+<script setup>
+// ユーザーストアを読み込み
+import { useUserStore } from '@/stores/user'
+
+// ストアのインスタンスを取得
+const userStore = useUserStore()
+
+// ログイン処理を行う関数
+const handleLogin = async () => {
+  // ストアのloginアクションを実行
+  const success = await userStore.login({
+    email: 'user@example.com',
+    password: 'password'
+  })
+  
+  // ログイン成功時はダッシュボードに遷移
+  if (success) {
+    router.push('/dashboard')
+  }
+}
+</script>
+```
+
+## デバッグとパフォーマンス最適化
+
+### Vue Devtoolsでのデバッグ
+```javascript
+// コンポーネントからデータを確認する方法
+console.log(this.$data) // Options API
+console.log({ ...reactive_data }) // Composition API
+
+// イベントオブジェクトをキャッチしてデバッグ
+<button @click="e => console.log(e)">クリック</button>
+```
+
+### エラーハンドリング
+```javascript
+// アプリケーション全体のエラーハンドラー設定
+const app = createApp(App)
+app.config.errorHandler = (err, instance, info) => {
+  // エラーオブジェクトをログ出力
+  console.error('Vue Error:', err)
+  // エラーが発生したコンポーネントインスタンス
+  console.log('Component:', instance)
+  // Vueが提供する追加情報
+  console.log('Info:', info)
+}
+
+// コンポーネント内でエラーをキャッチ
+export default {
+  // 子コンポーネントのエラーを捕捉
+  errorCaptured(err, instance, info) {
+    console.error('Error captured:', err)
+    // falseを返すとエラーの伝播を停止
+    return false
+  }
+}
+```
+
+### パフォーマンス最適化技術
+```javascript
+// コンポーネントの遅延ローディング
+const LazyComponent = defineAsyncComponent(() => import('./LazyComponent.vue'))
+
+// v-memo：依存値が変化しない限り再レンダリングをスキップ
+<template>
+  <div v-memo="[valueA, valueB]">
+    <!-- 高コストな計算や描画処理 -->
+  </div>
+</template>
+
+// KeepAlive：コンポーネントの状態を保持
+<template>
+  <keep-alive>
+    <!-- 切り替え時にコンポーネントを破棄せず状態を保持 -->
+    <component :is="currentComponent" />
+  </keep-alive>
+</template>
+```
